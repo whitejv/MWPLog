@@ -11,13 +11,10 @@
 ## Installing GNU Autotools
     sudo apt-get install autoconf automake libtool
 
-## Installing Influxdb C client
-    git clone https://github.com/influxdata/influxdb-c.git
-    cd influxdb-c
-    ./bootstrap
-    ./configure
-    make
-    sudo make install
+## Installing Influxdb C client - initialize your Go module.
+    go mod init github.com/xNok/Getting-Started-with-Go-and-InfluxDB
+    Add influxdb-client-go as a dependency to your project.
+    go get github.com/influxdata/influxdb-client-go/v2
 
 ## Installing GO Language
     Go to Website: https://go.dev/dl/
