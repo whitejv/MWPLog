@@ -13,6 +13,7 @@
 
 ## Installing Influxdb C client
     git clone https://github.com/influxdata/influxdb-c.git
+    cd influxdb-c
     ./bootstrap
     ./configure
     make
