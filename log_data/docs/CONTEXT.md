@@ -11,7 +11,7 @@ Shows unaggregated data
 Excludes noisy fields (measurement, host, topic)
 Supports both formatted and raw output modes
 InfluxDB Structure
-Host: http://192.168.1.88:8086
+Host: http://192.168.1.250:8086
 Organization: Milano
 Bucket: MWPWater
 Measurement: mwp_sensors
