@@ -5,14 +5,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 const (
-	influxDBHost   = "http://192.168.1.88:8086"
+	influxDBHost   = "http://192.168.1.250:8086"
 	influxDBToken  = "RHl3fYEp8eMLtIUraVPzY4zp_hnnu2kYlR9hYrUaJLcq5mB2PvDsOi9SR0Tu_i-t_183fHb1a95BTJug-vAPVQ=="
 	influxDBOrg    = "Milano"
 	influxDBBucket = "MWPWater"
@@ -50,7 +52,16 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
             |> aggregateWindow(every: %s, fn: sum, createEmpty: false)
             |> yield(name: "intervalFlow")
 
-        // Second query: Get averaged pressurePSI
+        // Second query: Get summed secondsOn
+        secondsOn = from(bucket: "%s")
+            |> range(start: -%s)
+            |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
+            |> filter(fn: (r) => r["_field"] == "secondsOn")
+            %s
+            |> aggregateWindow(every: %s, fn: sum, createEmpty: false)
+            |> yield(name: "secondsOn")
+
+        // Third query: Get averaged pressurePSI
         pressure = from(bucket: "%s")
             |> range(start: -%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
@@ -59,7 +70,7 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
             |> aggregateWindow(every: %s, fn: mean, createEmpty: false)
             |> yield(name: "pressure")
 
-        // Third query: Get averaged temperatureF
+        // Fourth query: Get averaged temperatureF
         temperature = from(bucket: "%s")
             |> range(start: -%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
@@ -68,7 +79,7 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
             |> aggregateWindow(every: %s, fn: mean, createEmpty: false)
             |> yield(name: "temperature")
 
-        // Fourth query: Get averaged amperage
+        // Fifth query: Get averaged amperage
         amperage = from(bucket: "%s")
             |> range(start: -%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
@@ -79,10 +90,18 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
     `, bucket, timeRange, filterStr, aggregateWindow,
 		bucket, timeRange, filterStr, aggregateWindow,
 		bucket, timeRange, filterStr, aggregateWindow,
+		bucket, timeRange, filterStr, aggregateWindow,
 		bucket, timeRange, filterStr, aggregateWindow)
 }
 
 func main() {
+	// Load the America/Chicago time zone
+	centralLoc, err := time.LoadLocation("America/Chicago")
+	if err != nil {
+		fmt.Printf("Error loading timezone: %s\n", err)
+		os.Exit(1)
+	}
+
 	// Command line flags with short and long versions
 	var windowFlag string
 	var rangeFlag string
@@ -152,17 +171,90 @@ func main() {
 	// Process results
 	fmt.Printf("\nController: %s, Zone: %s\n", controllerFlag, zoneFlag)
 	fmt.Printf("Time Window: %s, Range: %s\n\n", windowFlag, rangeFlag)
+
+	// Create a map to store the latest values for each timestamp
+	type TimeData struct {
+		Time         time.Time
+		IntervalFlow float64
+		SecondsOn    float64 // Added SecondsOn
+		PressurePSI  float64
+		Temperature  float64
+		Amperage     float64
+	}
+	timeMap := make(map[string]TimeData)
+
 	for result.Next() {
 		record := result.Record()
-		fmt.Printf("Time: %s, Field: %s, Value: %v\n",
-			record.Time().Format("2006-01-02 15:04:05"),
-			record.Field(),
-			record.Value())
+		// Convert UTC time to Central time using the timezone location
+		utcTime := record.Time()
+		localTime := utcTime.In(centralLoc)
+		timeStr := localTime.Format("2006-01-02 15:04:05") // Use standard format for map key
+
+		data, exists := timeMap[timeStr]
+		if !exists {
+			data = TimeData{Time: localTime} // Store local time
+		}
+
+		// Update the appropriate field based on the measurement name/field
+		switch record.Field() {
+		case "intervalFlow":
+			if v, ok := record.Value().(float64); ok {
+				data.IntervalFlow = v
+			}
+		case "secondsOn": // Added case for secondsOn
+			if v, ok := record.Value().(float64); ok {
+				data.SecondsOn = v
+			}
+		case "pressurePSI":
+			if v, ok := record.Value().(float64); ok {
+				data.PressurePSI = v
+			}
+		case "temperatureF":
+			if v, ok := record.Value().(float64); ok {
+				data.Temperature = v
+			}
+		case "amperage":
+			if v, ok := record.Value().(float64); ok {
+				data.Amperage = v
+			}
+		}
+
+		timeMap[timeStr] = data
 	}
 
 	if result.Err() != nil {
-		fmt.Printf("Query result error: %s\n", result.Err())
+		fmt.Printf("Query processing error: %s\n", result.Err())
 		os.Exit(1)
+	}
+
+	// Check if any data was collected
+	if len(timeMap) == 0 {
+		fmt.Println("No data found for the specified criteria.")
+		return
+	}
+
+	// Print the header
+	fmt.Printf("%-19s %12s %10s %10s %10s %8s\n",
+		"Time (Central)", "Flow", "Seconds", "PSI", "Temp°F", "Amps") // Added Seconds column
+	fmt.Println(strings.Repeat("-", 75)) // Adjusted header line length
+
+	// Sort the timestamps
+	times := make([]string, 0, len(timeMap))
+	for t := range timeMap {
+		times = append(times, t)
+	}
+	sort.Strings(times)
+
+	// Print the data in chronological order
+	for _, t := range times {
+		data := timeMap[t]
+		fmt.Printf("%-19s %12.2f %10.0f %10.1f %10.1f %8.2f\n",
+			t, // Use the formatted time string key
+			data.IntervalFlow,
+			data.SecondsOn, // Added SecondsOn data
+			data.PressurePSI,
+			data.Temperature,
+			data.Amperage)
 	}
 }
 

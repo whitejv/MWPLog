@@ -1,0 +1,61 @@
+# /home/pi/MWPLog/log_data/CMakeLists.txt
+
+# Find the Go compiler
+find_program(GO_EXECUTABLE go REQUIRED)
+message(STATUS "Found Go compiler: ${GO_EXECUTABLE}")
+
+# --- Build logit ---
+set(LOGIT_EXECUTABLE_NAME "logit")
+set(LOGIT_OUTPUT_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${LOGIT_EXECUTABLE_NAME}")
+set(LOGIT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmd/logit")
+
+add_custom_command(
+    OUTPUT ${LOGIT_OUTPUT_EXECUTABLE}
+    COMMAND ${GO_EXECUTABLE} build -o ${LOGIT_OUTPUT_EXECUTABLE} ${LOGIT_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} # Assuming module root is here
+    DEPENDS ${LOGIT_SOURCE_DIR}/main.go # Basic dependency
+    COMMENT "Building Go application ${LOGIT_EXECUTABLE_NAME}"
+    VERBATIM
+)
+
+add_custom_target(
+    ${LOGIT_EXECUTABLE_NAME}_build ALL
+    DEPENDS ${LOGIT_OUTPUT_EXECUTABLE}
+    COMMENT "Ensuring ${LOGIT_EXECUTABLE_NAME} is built"
+)
+
+install(
+    PROGRAMS ${LOGIT_OUTPUT_EXECUTABLE}
+    DESTINATION /home/pi/MWPLog/bin # Hardcoded path
+    RENAME ${LOGIT_EXECUTABLE_NAME}
+)
+
+message(STATUS "Configured Go build for ${LOGIT_EXECUTABLE_NAME}")
+
+# --- Build logitdebug ---
+set(LOGITDEBUG_EXECUTABLE_NAME "logitdebug")
+set(LOGITDEBUG_OUTPUT_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${LOGITDEBUG_EXECUTABLE_NAME}")
+set(LOGITDEBUG_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmd/logitdebug")
+
+add_custom_command(
+    OUTPUT ${LOGITDEBUG_OUTPUT_EXECUTABLE}
+    COMMAND ${GO_EXECUTABLE} build -o ${LOGITDEBUG_OUTPUT_EXECUTABLE} ${LOGITDEBUG_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} # Assuming module root is here
+    DEPENDS ${LOGITDEBUG_SOURCE_DIR}/main.go # Basic dependency
+    COMMENT "Building Go application ${LOGITDEBUG_EXECUTABLE_NAME}"
+    VERBATIM
+)
+
+add_custom_target(
+    ${LOGITDEBUG_EXECUTABLE_NAME}_build ALL
+    DEPENDS ${LOGITDEBUG_OUTPUT_EXECUTABLE}
+    COMMENT "Ensuring ${LOGITDEBUG_EXECUTABLE_NAME} is built"
+)
+
+install(
+    PROGRAMS ${LOGITDEBUG_OUTPUT_EXECUTABLE}
+    DESTINATION /home/pi/MWPLog/bin # Hardcoded path
+    RENAME ${LOGITDEBUG_EXECUTABLE_NAME}
+)
+
+message(STATUS "Configured Go build for ${LOGITDEBUG_EXECUTABLE_NAME}") 

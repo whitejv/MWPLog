@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmylib.a CMakeFiles/mylib.dir/logMsg.c.o CMakeFiles/mylib.dir/logTest.c.o CMakeFiles/mylib.dir/flowmon.c.o
+/usr/bin/ranlib libmylib.a

@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	influxDBHost   = "http://192.168.1.88:8086"
+	influxDBHost   = "http://192.168.1.250:8086"
 	influxDBToken  = "RHl3fYEp8eMLtIUraVPzY4zp_hnnu2kYlR9hYrUaJLcq5mB2PvDsOi9SR0Tu_i-t_183fHb1a95BTJug-vAPVQ=="
 	influxDBOrg    = "Milano"
 	influxDBBucket = "MWPWater"

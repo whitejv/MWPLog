@@ -21,8 +21,8 @@
 #include <json-c/json.h>
 #include "unistd.h"
 #include "MQTTClient.h"
-#include "../include/water.h"
-#include "../include/alert.h"
+#include "/home/pi/MWPCore/include/water.h"
+#include "/home/pi/MWPCore/include/alert.h"
 #include <stdbool.h> // Required for using 'bool' type
 
 int verbose = FALSE;
@@ -43,7 +43,7 @@ void delivered(void *context, MQTTClient_deliveryToken dt)
    would not work as a library file. So treating it like an include to 
    copy and paste the same code into multiple programs. 
 */
-#include "../mylib/msgarrvd.c"
+#include "/home/pi/MWPCore/mylib/msgarrvd.c"
 int blynkarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message)
 {
    int i;

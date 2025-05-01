@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG -rdynamic CMakeFiles/log.dir/log.c.o -o log   -L/usr/local/lib  -L/home/pi/paho.mqtt.c/build/output/lib  -L/home/pi/MWPLog/SysLog/../mylib  -Wl,-rpath,/usr/local/lib:/home/pi/paho.mqtt.c/build/output/lib:/home/pi/MWPLog/SysLog/../mylib: -lpaho-mqtt3c -lpaho-mqtt3a -lpaho-mqtt3as -lpaho-mqtt3cs -linfluxdb -Wl,-Bstatic -lmylib -Wl,-Bdynamic -lcurl -ljson-c 

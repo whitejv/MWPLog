@@ -1,0 +1,4 @@
+/home/pi/MWPLog/bin/mwp_data_service
+/home/pi/MWPLog/bin/logit
+/home/pi/MWPLog/bin/logitdebug
+/home/pi/MWPLog/bin/blynkLog

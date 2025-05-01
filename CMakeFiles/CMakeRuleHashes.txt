@@ -1,0 +1,7 @@
+# Hashes of file build rules.
+ce225f005da4825d5566e1d5b476d012 log_data/CMakeFiles/logit_build
+ce225f005da4825d5566e1d5b476d012 log_data/CMakeFiles/logitdebug_build
+cad5585a9316b80243854b09a2aac3fd log_data/logit
+7e6c33f89399e48dae5d5b0e4d685a9f log_data/logitdebug
+0ab54e8f52108768b03d1fe360855cae mwp_data_service/CMakeFiles/mwp_data_service_build
+eb0a098acff7b351f9357fb753fdfa2f mwp_data_service/mwp_data_service
