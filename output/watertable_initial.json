@@ -1,0 +1,770 @@
+{
+  "0": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "1": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "10": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "11": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "12": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "13": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "14": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "15": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "16": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "17": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "18": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "19": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "20": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "21": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "22": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "23": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "24": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "25": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "26": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "27": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "28": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "29": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "30": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "31": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "32": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "6": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "7": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "8": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "9": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "2": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "10": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "11": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "12": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "13": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "14": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "15": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "16": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "17": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "18": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "19": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "20": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "21": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "22": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "23": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "24": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "25": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "26": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "27": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "28": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "29": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "30": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "31": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "32": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "6": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "7": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "8": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "9": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "3": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "4": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "5": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  }
+}

@@ -5,7 +5,6 @@
 #include <math.h>
 #include <time.h>
 #include <json-c/json.h>
-#include <curl/curl.h>
 #include "unistd.h"
 #include "MQTTClient.h"
 #include "influxdb.h"
@@ -22,63 +21,6 @@ int verbose = FALSE;
 #define INFLUXDB_PRECISION "s"
 
 s_influxdb_client *influxdb_client;
-
-void init_influxdb() {
-    influxdb_client = influxdb_client_new(INFLUXDB_HOST, INFLUXDB_TOKEN, "", INFLUXDB_BUCKET, 0);
-    if (influxdb_client == NULL) {
-        fprintf(stderr, "Failed to create InfluxDB client\n");
-        exit(1);
-    }
-}
-size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) {
-    return size * nmemb;
-}
-void write_to_influxdb(int pump, int param1, int param2, float intervalFlow, float pressure, float amperage, float temperature) {
-    CURL *curl;
-    CURLcode res;
-    char url[256];
-    // Line protocol format: measurement,tag_key=tag_value field_key=field_value timestamp
-    // In this case, no tags are added, and the fields are the metrics you're sending
-    char data[512];
-
-    snprintf(data, sizeof(data),
-        "pump_metrics,pump_id=%d,param1=%d,param2=%d interval_flow=%.2f,pressure=%.2f,amperage=%.2f,temperature=%.2f",
-        pump, param1, param2, intervalFlow, pressure, amperage, temperature);
-
-    // InfluxDB v2 settings
-    struct curl_slist *headers = NULL;
-    char auth_header[256];
-
-    curl = curl_easy_init();
-    if(curl) {
-        snprintf(url, sizeof(url), "%s/api/v2/write?org=%s&bucket=%s", INFLUXDB_HOST, INFLUXDB_ORG, INFLUXDB_BUCKET);
-        snprintf(auth_header, sizeof(auth_header), "Authorization: Token %s", INFLUXDB_TOKEN);
-
-        headers = curl_slist_append(headers, auth_header);
-        headers = curl_slist_append(headers, "Content-Type: text/plain; charset=utf-8");
-        printf("url: %s\n", url);
-        printf("data: %s\n", data);
-        printf("auth_header: %s\n", auth_header);
-
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-
-        res = curl_easy_perform(curl);
-        if(res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        }
-        else {
-            long response_code;
-            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-            printf("InfluxDB write status: %ld\n", response_code);
-        }
-
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-    }
-}
 
 MQTTClient client;
 MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;

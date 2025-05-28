@@ -1,0 +1,770 @@
+{
+  "0": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "1": {
+    "1": {
+      "totalFlow": 506.63787426799536,
+      "totalSeconds": 4125.931837558746,
+      "avgPSI": 40.90096866544088,
+      "avgTempF": 77.08904399525035,
+      "avgAmps": 1.4418429183670969,
+      "gpm": 7.367613827102373,
+      "updatedInLastQuery": true
+    },
+    "10": {
+      "totalFlow": 832.8638752400875,
+      "totalSeconds": 5926.258279800415,
+      "avgPSI": 45.006061391790205,
+      "avgTempF": 69.33289159138998,
+      "avgAmps": 1.3778587394223434,
+      "gpm": 8.432273815121032,
+      "updatedInLastQuery": true
+    },
+    "11": {
+      "totalFlow": 974.3720032572746,
+      "totalSeconds": 3358.703274488449,
+      "avgPSI": 47.7497166637298,
+      "avgTempF": 66.92970839222674,
+      "avgAmps": 1.4896670727235637,
+      "gpm": 17.40621764342688,
+      "updatedInLastQuery": true
+    },
+    "12": {
+      "totalFlow": 434.078624099493,
+      "totalSeconds": 2239.4385063648224,
+      "avgPSI": 46.55307323307584,
+      "avgTempF": 70.47268884956118,
+      "avgAmps": 1.406423866828673,
+      "gpm": 11.630021262895392,
+      "updatedInLastQuery": true
+    },
+    "13": {
+      "totalFlow": 427.03403843939304,
+      "totalSeconds": 2239.4640377759933,
+      "avgPSI": 45.85020362761149,
+      "avgTempF": 70.5458447352857,
+      "avgAmps": 1.4044006370763364,
+      "gpm": 11.44114925453716,
+      "updatedInLastQuery": true
+    },
+    "14": {
+      "totalFlow": 519.6087118014693,
+      "totalSeconds": 3016.6238642930984,
+      "avgPSI": 43.48959249289662,
+      "avgTempF": 72.59948075291965,
+      "avgAmps": 1.3757327771708567,
+      "gpm": 10.334905546931328,
+      "updatedInLastQuery": true
+    },
+    "15": {
+      "totalFlow": 21.45957199856639,
+      "totalSeconds": 628.1303824186325,
+      "avgPSI": 45.2718257418104,
+      "avgTempF": 75.65966993684222,
+      "avgAmps": 1.3227133929349815,
+      "gpm": 2.049851998809777,
+      "updatedInLastQuery": true
+    },
+    "16": {
+      "totalFlow": 1454.1083326041698,
+      "totalSeconds": 5569.235800147057,
+      "avgPSI": 41.61806607032302,
+      "avgTempF": 75.74110207338443,
+      "avgAmps": 1.4777931162509426,
+      "gpm": 15.665793851635163,
+      "updatedInLastQuery": true
+    },
+    "17": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "18": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "19": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 579.0121921002865,
+      "totalSeconds": 3540.76098883152,
+      "avgPSI": 46.12801695085515,
+      "avgTempF": 67.56150373792917,
+      "avgAmps": 1.4362220491393138,
+      "gpm": 9.81165676971659,
+      "updatedInLastQuery": true
+    },
+    "20": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "21": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "22": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "23": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "24": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "25": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "26": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "27": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "28": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "29": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 700.0469953119755,
+      "totalSeconds": 4238.944416284561,
+      "avgPSI": 46.156771919534926,
+      "avgTempF": 68.88168196792927,
+      "avgAmps": 1.4287418724794105,
+      "gpm": 9.908792282663155,
+      "updatedInLastQuery": true
+    },
+    "30": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "31": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "32": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 786.158258497715,
+      "totalSeconds": 3520.7571021318436,
+      "avgPSI": 48.409636517817326,
+      "avgTempF": 68.88417757207696,
+      "avgAmps": 1.4207164888016202,
+      "gpm": 13.397543239009995,
+      "updatedInLastQuery": true
+    },
+    "5": {
+      "totalFlow": 812.6547164320946,
+      "totalSeconds": 5926.326169967651,
+      "avgPSI": 45.78969589088536,
+      "avgTempF": 68.6892004555489,
+      "avgAmps": 1.3775827966158902,
+      "gpm": 8.227573303848684,
+      "updatedInLastQuery": true
+    },
+    "6": {
+      "totalFlow": 837.1522686928511,
+      "totalSeconds": 5917.3338170051575,
+      "avgPSI": 45.59505234335305,
+      "avgTempF": 67.42789531124855,
+      "avgAmps": 1.3779072098993144,
+      "gpm": 8.488474315446464,
+      "updatedInLastQuery": true
+    },
+    "7": {
+      "totalFlow": 746.8318643271923,
+      "totalSeconds": 5200.081147432327,
+      "avgPSI": 45.74602800333677,
+      "avgTempF": 69.81562137181861,
+      "avgAmps": 1.4105510773349665,
+      "gpm": 8.617156269139679,
+      "updatedInLastQuery": true
+    },
+    "8": {
+      "totalFlow": 1595.9951125979424,
+      "totalSeconds": 5201.142012357712,
+      "avgPSI": 46.82866130920557,
+      "avgTempF": 69.78937604464018,
+      "avgAmps": 1.511060785330259,
+      "gpm": 18.41128477714225,
+      "updatedInLastQuery": true
+    },
+    "9": {
+      "totalFlow": 822.2353532761335,
+      "totalSeconds": 5921.250569462776,
+      "avgPSI": 45.19239646446061,
+      "avgTempF": 69.56048082725422,
+      "avgAmps": 1.374897980589319,
+      "gpm": 8.33170638834222,
+      "updatedInLastQuery": true
+    }
+  },
+  "2": {
+    "1": {
+      "totalFlow": 534.1733902096748,
+      "totalSeconds": 3536.7718250751495,
+      "avgPSI": 44.96096890005051,
+      "avgTempF": 69.011638425594,
+      "avgAmps": 1.3931597952659314,
+      "gpm": 9.062050083454134,
+      "updatedInLastQuery": true
+    },
+    "10": {
+      "totalFlow": 666.3738661110401,
+      "totalSeconds": 2279.522220015526,
+      "avgPSI": 46.80748468409928,
+      "avgTempF": 66.79340126201635,
+      "avgAmps": 1.4920544248759198,
+      "gpm": 17.539829888734353,
+      "updatedInLastQuery": true
+    },
+    "11": {
+      "totalFlow": 623.3842844069004,
+      "totalSeconds": 2638.581971526146,
+      "avgPSI": 47.21777329885933,
+      "avgTempF": 66.7006207683757,
+      "avgAmps": 1.4337316297327958,
+      "gpm": 14.175438727332862,
+      "updatedInLastQuery": true
+    },
+    "12": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "13": {
+      "totalFlow": 651.8884388208389,
+      "totalSeconds": 2476.557750225067,
+      "avgPSI": 46.65027757684711,
+      "avgTempF": 66.64931813734606,
+      "avgAmps": 1.4597350721983224,
+      "gpm": 15.793415810996436,
+      "updatedInLastQuery": true
+    },
+    "14": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "15": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "16": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "17": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "18": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "19": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 827.4747593402863,
+      "totalSeconds": 3278.7292160987854,
+      "avgPSI": 47.24000589290431,
+      "avgTempF": 66.48732299525393,
+      "avgAmps": 1.4404859843597388,
+      "gpm": 15.142600162477494,
+      "updatedInLastQuery": true
+    },
+    "20": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "21": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "22": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "23": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "24": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "25": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "26": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "27": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "28": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "29": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 873.5287461578846,
+      "totalSeconds": 3278.724714040756,
+      "avgPSI": 46.89131334964061,
+      "avgTempF": 66.46909997578145,
+      "avgAmps": 1.4573474838065985,
+      "gpm": 15.985399611326311,
+      "updatedInLastQuery": true
+    },
+    "30": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "31": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "32": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 736.3002025783062,
+      "totalSeconds": 2639.571720600128,
+      "avgPSI": 45.640118100960265,
+      "avgTempF": 69.06454972255948,
+      "avgAmps": 1.4618889870811655,
+      "gpm": 16.73681067648889,
+      "updatedInLastQuery": true
+    },
+    "5": {
+      "totalFlow": 572.3022352233529,
+      "totalSeconds": 2104.472360610962,
+      "avgPSI": 45.637305110353026,
+      "avgTempF": 70.97231951231285,
+      "avgAmps": 1.4955114210059888,
+      "gpm": 16.316742740889346,
+      "updatedInLastQuery": true
+    },
+    "6": {
+      "totalFlow": 468.23606322705746,
+      "totalSeconds": 1945.413168668747,
+      "avgPSI": 43.07595003429599,
+      "avgTempF": 71.12229420090702,
+      "avgAmps": 1.4148216028139953,
+      "gpm": 14.441232456984128,
+      "updatedInLastQuery": true
+    },
+    "7": {
+      "totalFlow": 397.9839257001877,
+      "totalSeconds": 1757.3913123607635,
+      "avgPSI": 46.79770000834457,
+      "avgTempF": 71.14769549904456,
+      "avgAmps": 1.4138469181077074,
+      "gpm": 13.587773749679997,
+      "updatedInLastQuery": true
+    },
+    "8": {
+      "totalFlow": 591.2961922883987,
+      "totalSeconds": 2096.4697732925415,
+      "avgPSI": 46.208299067184214,
+      "avgTempF": 68.37405149445279,
+      "avgAmps": 1.468024828677414,
+      "gpm": 16.922624876000704,
+      "updatedInLastQuery": true
+    },
+    "9": {
+      "totalFlow": 674.5191759765148,
+      "totalSeconds": 2509.5509033203125,
+      "avgPSI": 46.95478963300782,
+      "avgTempF": 66.63681613805048,
+      "avgAmps": 1.50318056318854,
+      "gpm": 16.12684983000134,
+      "updatedInLastQuery": true
+    }
+  },
+  "3": {
+    "1": {
+      "totalFlow": 24860.309470117092,
+      "totalSeconds": 149215.04316031933,
+      "avgPSI": 168666296117820700000,
+      "avgTempF": 2.893901686500556e+23,
+      "avgAmps": 2.705312388233682e+29,
+      "gpm": 9.996435591312357,
+      "updatedInLastQuery": true
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 8923.949709534645,
+      "avgPSI": 3.620941712778835e+29,
+      "avgTempF": 71.72973550507051,
+      "avgAmps": 5.750212960180936e+26,
+      "gpm": 0,
+      "updatedInLastQuery": true
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "4": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  },
+  "5": {
+    "1": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "2": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "3": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "4": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    },
+    "5": {
+      "totalFlow": 0,
+      "totalSeconds": 0,
+      "avgPSI": 0,
+      "avgTempF": 0,
+      "avgAmps": 0,
+      "gpm": 0,
+      "updatedInLastQuery": false
+    }
+  }
+}

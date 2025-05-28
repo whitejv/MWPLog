@@ -1,0 +1,41 @@
+# mwp_data_service/config/config.yaml
+
+influxdb:
+  host: "http://192.168.1.250:8086"
+  # IMPORTANT: Replace with your actual token. Consider using environment variables
+  # or a more secure method than hardcoding in the config file for production.
+  token: "RHl3fYEp8eMLtIUraVPzY4zp_hnnu2kYlR9hYrUaJLcq5mB2PvDsOi9SR0Tu_i-t_183fHb1a95BTJug-vAPVQ=="
+  org: "Milano"
+  bucket: "MWPWater"
+
+logging:
+  level: "info" # Options: debug, info, warn, error
+  # file: "/var/log/mwp_data_service.log" # Optional: Uncomment to log to a file
+
+controllers:
+  default_zones: 5 # Number of zones for controllers 0, 3, 4, 5
+  special_controllers:
+    "1": 32       # Number of zones for controller 1
+    "2": 32       # Number of zones for controller 2
+  zone_start_index: 1 # Assume zones are numbered starting from 1
+  total_controllers: 6 # Defines controllers 0, 1, 2, 3, 4, 5
+
+# Environment-specific settings
+environments:
+  development: # Settings used when -D flag is present or no flag is given
+    mqtt:
+      broker: "tcp://192.168.1.249:1883" # Example: local Mosquitto broker
+      client_id: "mwp_data_aggregator_dev"
+      request_topic: "mwp/data/query_request_dev"
+      response_topic: "mwp/data/query_results_dev"
+      # username: "dev_user" # Optional: Add if MQTT broker requires auth
+      # password: "dev_password" # Optional: Add if MQTT broker requires auth
+  production: # Settings used when -P flag is present
+    mqtt:
+      # IMPORTANT: Replace with your actual production broker address
+      broker: "tcp://192.168.1.250:1883"
+      client_id: "mwp_data_aggregator_prod"
+      request_topic: "mwp/data/query_request"
+      response_topic: "mwp/data/query_results"
+      # username: "prod_user" # Optional: Add if MQTT broker requires auth
+      # password: "prod_password" # Optional: Add if MQTT broker requires auth 

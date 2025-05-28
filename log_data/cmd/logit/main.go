@@ -20,21 +20,40 @@ const (
 	influxDBBucket = "MWPWater"
 )
 
-var timeWindows = map[string]string{
-	"1m":   "1m",
-	"5m":   "5m",
-	"1h":   "1h",
-	"12h":  "12h",
-	"24h":  "24h",
-	"7d":   "168h",
-	"30d":  "720h",
-	"3mo":  "2160h",
-	"6mo":  "4320h",
-	"12mo": "8760h",
+// Helper function to parse month names to time.Month
+func parseMonth(monthStr string) (time.Month, error) {
+	switch strings.ToLower(monthStr) {
+	case "january":
+		return time.January, nil
+	case "february":
+		return time.February, nil
+	case "march":
+		return time.March, nil
+	case "april":
+		return time.April, nil
+	case "may":
+		return time.May, nil
+	case "june":
+		return time.June, nil
+	case "july":
+		return time.July, nil
+	case "august":
+		return time.August, nil
+	case "september":
+		return time.September, nil
+	case "october":
+		return time.October, nil
+	case "november":
+		return time.November, nil
+	case "december":
+		return time.December, nil
+	default:
+		return 0, fmt.Errorf("invalid month: %s", monthStr)
+	}
 }
 
-func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) string {
-	// Build the zone filter based on whether it was specified
+// buildQuery now accepts queryRangeStr which can be a relative duration or absolute start/stop times
+func buildQuery(bucket, queryRangeStr, aggregateWindow, controller, zone string) string {
 	var filterStr string
 	if zone != "" {
 		filterStr = fmt.Sprintf(`|> filter(fn: (r) => r["Controller"] == "%s" and r["Zone"] == "%s")`, controller, zone)
@@ -42,10 +61,21 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
 		filterStr = fmt.Sprintf(`|> filter(fn: (r) => r["Controller"] == "%s")`, controller)
 	}
 
+	// Determine if queryRangeStr is for absolute or relative range
+	rangeOperator := ""
+	if strings.Contains(queryRangeStr, "start:") { // Indicates an absolute range string
+		rangeOperator = queryRangeStr // Use as is: "start: 2023-01-01T00:00:00Z, stop: 2023-02-01T00:00:00Z"
+	} else { // Assumed to be a relative duration like "24h"
+		rangeOperator = fmt.Sprintf("start: -%s", queryRangeStr)
+	}
+
 	return fmt.Sprintf(`
+		import "timezone"
+		option location = timezone.location(name: "America/Chicago")
+
         // First query: Get summed intervalFlow
         intervalFlow = from(bucket: "%s")
-            |> range(start: -%s)
+            |> range(%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
             |> filter(fn: (r) => r["_field"] == "intervalFlow")
             %s
@@ -54,7 +84,7 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
 
         // Second query: Get summed secondsOn
         secondsOn = from(bucket: "%s")
-            |> range(start: -%s)
+            |> range(%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
             |> filter(fn: (r) => r["_field"] == "secondsOn")
             %s
@@ -63,7 +93,7 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
 
         // Third query: Get averaged pressurePSI
         pressure = from(bucket: "%s")
-            |> range(start: -%s)
+            |> range(%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
             |> filter(fn: (r) => r["_field"] == "pressurePSI")
             %s
@@ -72,7 +102,7 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
 
         // Fourth query: Get averaged temperatureF
         temperature = from(bucket: "%s")
-            |> range(start: -%s)
+            |> range(%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
             |> filter(fn: (r) => r["_field"] == "temperatureF")
             %s
@@ -81,17 +111,17 @@ func buildQuery(bucket, timeRange, aggregateWindow, controller, zone string) str
 
         // Fifth query: Get averaged amperage
         amperage = from(bucket: "%s")
-            |> range(start: -%s)
+            |> range(%s)
             |> filter(fn: (r) => r["_measurement"] == "mwp_sensors")
             |> filter(fn: (r) => r["_field"] == "amperage")
             %s
             |> aggregateWindow(every: %s, fn: mean, createEmpty: false)
             |> yield(name: "amperage")
-    `, bucket, timeRange, filterStr, aggregateWindow,
-		bucket, timeRange, filterStr, aggregateWindow,
-		bucket, timeRange, filterStr, aggregateWindow,
-		bucket, timeRange, filterStr, aggregateWindow,
-		bucket, timeRange, filterStr, aggregateWindow)
+    `, bucket, rangeOperator, filterStr, aggregateWindow,
+		bucket, rangeOperator, filterStr, aggregateWindow,
+		bucket, rangeOperator, filterStr, aggregateWindow,
+		bucket, rangeOperator, filterStr, aggregateWindow,
+		bucket, rangeOperator, filterStr, aggregateWindow)
 }
 
 func main() {
@@ -109,35 +139,80 @@ func main() {
 	var zoneFlag string
 
 	// Long versions
-	flag.StringVar(&windowFlag, "window", "", "Time window for aggregation (1m, 5m, 1h, 12h, 24h, 7d, 30d, 3mo, 6mo, 12mo)")
-	flag.StringVar(&rangeFlag, "range", "24h", "Time range to query (same options as window)")
 	flag.StringVar(&controllerFlag, "controller", "1", "Controller number (0-5)")
-	flag.StringVar(&zoneFlag, "zone", "", "Zone number (0-16), if not specified shows all zones")
-
-	// Short versions
-	flag.StringVar(&windowFlag, "w", "", "Time window for aggregation (shorthand)")
-	flag.StringVar(&rangeFlag, "r", "24h", "Time range to query (shorthand)")
 	flag.StringVar(&controllerFlag, "c", "1", "Controller number (shorthand)")
+
+	flag.StringVar(&rangeFlag, "range", "24h", `Time range to query. Valid options:
+        1. Duration string: e.g., "30m", "1h", "2d", "48h".
+           This defines a period relative to the current time (e.g., "24h" means the last 24 hours).
+        2. "now": Displays data from the last 1 minute.
+        3. Month name: e.g., "January", "February", ..., "December".
+           Queries data for the entire specified calendar month of the current year.`)
+	flag.StringVar(&rangeFlag, "r", "24h", "Time range to query (shorthand)")
+
+	flag.StringVar(&windowFlag, "window", "", `Aggregation window for the data (e.g., "1s", "1m", "5m", "1h", "1d").
+        - If --range is a duration string (e.g., "24h") and --window is not set, --window defaults to the --range value.
+        - If --range is "now" and --window is not set, --window defaults to "1s".
+        - If --range is a month name (e.g., "June") and --window is not set, --window defaults to "1d".
+        You can always override these default aggregation windows by explicitly setting the --window value.`)
+	flag.StringVar(&windowFlag, "w", "", "Aggregation window for the data (shorthand)")
+
+	flag.StringVar(&zoneFlag, "zone", "", "Zone number (0-16). If not specified, shows all zones for the selected controller.")
 	flag.StringVar(&zoneFlag, "z", "", "Zone number (shorthand)")
 
 	flag.Parse()
 
-	// If window not specified, use range value
+	queryRangeStr := rangeFlag      // This will be passed to buildQuery. Can be relative duration or absolute start/stop.
+	actualRangeDisplay := rangeFlag // For display purposes
+
+	// Handle "now" keyword for range
+	if strings.ToLower(rangeFlag) == "now" {
+		queryRangeStr = "1m" // Query last 1 minute
+		actualRangeDisplay = "now (last 1 minute)"
+		if windowFlag == "" {
+			windowFlag = "1s" // Default aggregation window for "now"
+		}
+	} else if month, err := parseMonth(rangeFlag); err == nil {
+		// Handle month name for range
+		now := time.Now()
+		// Construct start and end times for the month in UTC for the query
+		// The InfluxDB timezone option will handle display in Central time.
+		startOfMonth := time.Date(now.Year(), month, 1, 0, 0, 0, 0, time.UTC)
+		endOfMonth := startOfMonth.AddDate(0, 1, 0) // First day of next month
+
+		queryRangeStr = fmt.Sprintf("start: %s, stop: %s",
+			startOfMonth.Format(time.RFC3339),
+			endOfMonth.Format(time.RFC3339))
+		actualRangeDisplay = fmt.Sprintf("%s %d", month.String(), now.Year())
+		if windowFlag == "" {
+			windowFlag = "1d" // Default aggregation window for month queries
+		}
+	}
+
+	// If windowFlag is still empty (not "now", not a month, and not explicitly set), default it.
+	// For simple duration ranges, if window is not set, it defaults to the range itself
+	// (resulting in one aggregated point).
 	if windowFlag == "" {
-		windowFlag = rangeFlag
+		// Check if rangeFlag is a simple duration (not "now" and not a month that was processed above)
+		_, monthParseErr := parseMonth(rangeFlag)
+		if strings.ToLower(rangeFlag) != "now" && monthParseErr != nil {
+			windowFlag = rangeFlag
+		} else if windowFlag == "" { // Catch-all if still not set (e.g. if range was 'now' or a month but window not set by those blocks)
+			// This case might be redundant if "now" and month logic correctly sets windowFlag
+			// but as a fallback, default to range.
+			windowFlag = queryRangeStr // or rangeFlag, depending on desired default for complex cases
+		}
 	}
 
-	// Validate time window and range
-	if _, ok := timeWindows[windowFlag]; !ok {
-		fmt.Printf("Invalid time window. Valid options are: %s\n", strings.Join(keys(timeWindows), ", "))
-		os.Exit(1)
-	}
-	if _, ok := timeWindows[rangeFlag]; !ok {
-		fmt.Printf("Invalid time range. Valid options are: %s\n", strings.Join(keys(timeWindows), ", "))
+	// Basic validation for windowFlag - check if it's a duration or one of the special values handled.
+	// More robust duration string validation could be added if needed.
+	// For now, rely on InfluxDB to reject invalid duration strings.
+	if windowFlag == "" {
+		fmt.Println("Error: Aggregation window (-w, --window) could not be determined. Please specify a valid window.")
 		os.Exit(1)
 	}
 
-	// Validate controller (always required, defaults to 1)
+	// Validate controller
 	controllerNum, err := strconv.Atoi(controllerFlag)
 	if err != nil || controllerNum < 0 || controllerNum > 5 {
 		fmt.Println("Invalid controller. Must be between 0 and 5")
@@ -161,16 +236,16 @@ func main() {
 	queryAPI := client.QueryAPI(influxDBOrg)
 
 	// Build and execute query
-	query := buildQuery(influxDBBucket, timeWindows[rangeFlag], timeWindows[windowFlag], controllerFlag, zoneFlag)
+	query := buildQuery(influxDBBucket, queryRangeStr, windowFlag, controllerFlag, zoneFlag)
 	result, err := queryAPI.Query(context.Background(), query)
 	if err != nil {
-		fmt.Printf("Query error: %s\n", err)
+		fmt.Printf("Query error: %s\nQuery was:\n%s\n", err, query)
 		os.Exit(1)
 	}
 
 	// Process results
 	fmt.Printf("\nController: %s, Zone: %s\n", controllerFlag, zoneFlag)
-	fmt.Printf("Time Window: %s, Range: %s\n\n", windowFlag, rangeFlag)
+	fmt.Printf("Time Window (Aggregation): %s, Range: %s\n\n", windowFlag, actualRangeDisplay) // Use actualRangeDisplay
 
 	// Create a map to store the latest values for each timestamp
 	type TimeData struct {
@@ -256,12 +331,4 @@ func main() {
 			data.Temperature,
 			data.Amperage)
 	}
-}
-
-func keys(m map[string]string) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }
