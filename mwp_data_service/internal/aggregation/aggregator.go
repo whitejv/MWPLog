@@ -3,6 +3,7 @@ package aggregation
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -75,8 +76,24 @@ func parseMonth(monthStr string) (time.Month, error) {
 	}
 }
 
+// isYear checks if a string is a four-digit number, likely a year.
+func isYear(s string) (int, bool) {
+	if len(s) != 4 {
+		return 0, false
+	}
+	year, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, false
+	}
+	// Basic sanity check for a reasonable year range, adjust if needed.
+	if year < 1900 || year > 2200 {
+		return 0, false
+	}
+	return year, true
+}
+
 // QueryAggregatedData constructs and executes a Flux query to get aggregated data.
-// The timeRange parameter can be a relative duration (e.g., "24h"), "now", or a month name (e.g., "June").
+// The timeRange parameter can be a relative duration (e.g., "24h"), "now", a month name (e.g., "June"), or a year (e.g., "2023").
 func QueryAggregatedData(client influxdb2.Client, timeRange string, dbConfig config.InfluxDBConfig) ([]AggregatedRecord, error) {
 	queryAPI := client.QueryAPI(dbConfig.Org)
 
@@ -84,6 +101,13 @@ func QueryAggregatedData(client influxdb2.Client, timeRange string, dbConfig con
 
 	if strings.ToLower(timeRange) == "now" {
 		fluxRangeParameter = "start: -1m" // "now" means query the last 1 minute
+	} else if yearVal, isYr := isYear(timeRange); isYr {
+		// Handle year
+		startOfYear := time.Date(yearVal, time.January, 1, 0, 0, 0, 0, time.UTC)
+		endOfYear := startOfYear.AddDate(1, 0, 0) // First day of the next year
+		fluxRangeParameter = fmt.Sprintf("start: %s, stop: %s",
+			startOfYear.Format(time.RFC3339),
+			endOfYear.Format(time.RFC3339))
 	} else if month, err := parseMonth(timeRange); err == nil {
 		// Handle month name
 		currentTime := time.Now() // Use current time to determine the year for the month

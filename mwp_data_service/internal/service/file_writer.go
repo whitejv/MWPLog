@@ -12,9 +12,16 @@ import (
 	"mwp_data_service/internal/datastore" // To use datastore.WaterDataTable
 )
 
-// WriteDataTableToJSON marshals the WaterDataTable to an indented JSON format
-// and writes it to the specified filename. It creates the output directory if it doesn't exist.
-func WriteDataTableToJSON(dataTable datastore.WaterDataTable, filename string) error {
+// ReportData encapsulates the super summaries and the main data table for JSON output.
+type ReportData struct {
+	TotalIrrigationGallons float64                  `json:"totalIrrigationGallons"`
+	TotalWell3Gallons      float64                  `json:"totalWell3Gallons"`
+	Details                datastore.WaterDataTable `json:"details"`
+}
+
+// WriteDataTableToJSON marshals the ReportData (including super summaries and WaterDataTable)
+// to an indented JSON format and writes it to the specified filename.
+func WriteDataTableToJSON(dataTable datastore.WaterDataTable, totalIrrigationGallons, totalWell3Gallons float64, filename string) error {
 	// Ensure the output directory exists
 	dir := filepath.Dir(filename)
 	if dir != "." && dir != "" { // Check if a directory part exists
@@ -23,10 +30,17 @@ func WriteDataTableToJSON(dataTable datastore.WaterDataTable, filename string) e
 		}
 	}
 
-	// Marshal the data table to JSON with indentation for readability
-	jsonData, err := json.MarshalIndent(dataTable, "", "  ") // Using two spaces for indentation
+	// Create the encompassing structure
+	reportOutput := ReportData{
+		TotalIrrigationGallons: totalIrrigationGallons,
+		TotalWell3Gallons:      totalWell3Gallons,
+		Details:                dataTable,
+	}
+
+	// Marshal the report data to JSON with indentation
+	jsonData, err := json.MarshalIndent(reportOutput, "", "  ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal WaterDataTable to JSON: %w", err)
+		return fmt.Errorf("failed to marshal ReportData to JSON: %w", err)
 	}
 
 	// Write the JSON data to the file
@@ -38,9 +52,9 @@ func WriteDataTableToJSON(dataTable datastore.WaterDataTable, filename string) e
 	return nil
 }
 
-// WriteDataTableAsTextReport formats the WaterDataTable into a human-readable text report
-// and writes it to the specified filename. It creates the output directory if it doesn't exist.
-func WriteDataTableAsTextReport(dataTable datastore.WaterDataTable, filename string) error {
+// WriteDataTableAsTextReport formats the WaterDataTable into a human-readable text report,
+// prepending it with super summaries, and writes it to the specified filename.
+func WriteDataTableAsTextReport(dataTable datastore.WaterDataTable, totalIrrigationGallons, totalWell3Gallons float64, filename string) error {
 	// Ensure the output directory exists
 	dir := filepath.Dir(filename)
 	if dir != "." && dir != "" { // Check if a directory part exists
@@ -50,6 +64,11 @@ func WriteDataTableAsTextReport(dataTable datastore.WaterDataTable, filename str
 	}
 
 	var report strings.Builder
+
+	// Add Super Summaries at the top
+	report.WriteString(fmt.Sprintf("Super Summary - Total Irrigation Gallons (C0, C1, C2): %.2f\n", totalIrrigationGallons))
+	report.WriteString(fmt.Sprintf("Super Summary - Total Well 3 Gallons (C3Z1): %.2f\n", totalWell3Gallons))
+	report.WriteString("\n" + strings.Repeat("=", 80) + "\n\n") // Separator
 
 	// Define header with padding - adjust padding as needed
 	header := fmt.Sprintf("%-12s %-6s %-10s %-12s %-8s %-10s %-10s %-8s %-8s\n",

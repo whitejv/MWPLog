@@ -35,8 +35,8 @@ func main() {
 	flag.BoolVar(&verbose, "v", false, "Enable verbose logging (shorthand)")
 	flag.BoolVar(&productionEnv, "P", false, "Use Production environment settings")
 	flag.BoolVar(&developmentEnv, "D", false, "Use Development environment settings")
-	flag.StringVar(&queryTimeRange, "range", "24h", "Time range for InfluxDB query (e.g., '24h', 'now', 'June')") // Added time range flag
-	flag.StringVar(&queryTimeRange, "r", "24h", "Time range for InfluxDB query (shorthand)")                      // Added time range flag shorthand
+	flag.StringVar(&queryTimeRange, "range", "24h", "Time range for InfluxDB query (e.g., '24h', 'now', 'June', '2023')") // Updated help text
+	flag.StringVar(&queryTimeRange, "r", "24h", "Time range for InfluxDB query (shorthand)")                              // Added time range flag shorthand
 
 	// Parse the flags
 	flag.Parse()
@@ -91,10 +91,11 @@ func main() {
 	// }
 
 	// Write the initial water data table to JSON and text report files
-	if err := service.WriteDataTableToJSON(waterDataTable, "output/watertable_initial.json"); err != nil {
+	// Pass 0.0 for super summaries for the initial report
+	if err := service.WriteDataTableToJSON(waterDataTable, 0.0, 0.0, "output/watertable_initial.json"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing initial data table to JSON file: %v\n", err)
 	}
-	if err := service.WriteDataTableAsTextReport(waterDataTable, "output/watertable_initial_report.txt"); err != nil {
+	if err := service.WriteDataTableAsTextReport(waterDataTable, 0.0, 0.0, "output/watertable_initial_report.txt"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing initial data table to text report file: %v\n", err)
 	}
 
@@ -121,9 +122,22 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error querying aggregated data: %v\n", err)
 		} else {
 			fmt.Printf("Query returned %d records.\n", len(aggregatedRecords))
+
+			// Initialize Super Summary variables
+			var totalIrrigationGallons float64
+			var totalWell3Gallons float64
+
 			if len(aggregatedRecords) > 0 {
 				fmt.Println("Processing aggregated records...")
 				for _, record := range aggregatedRecords {
+					// Accumulate Super Summaries
+					if record.Controller == "0" || record.Controller == "1" || record.Controller == "2" {
+						totalIrrigationGallons += record.TotalFlow
+					}
+					if record.Controller == "3" && record.Zone == "1" {
+						totalWell3Gallons += record.TotalFlow // Should be just = if QueryAggregatedData guarantees one record per C/Z
+					}
+
 					gpm := 0.0
 					if record.TotalSeconds > 0 {
 						gpm = record.TotalFlow / (record.TotalSeconds / 60.0)
@@ -134,15 +148,27 @@ func main() {
 				}
 				fmt.Println("Finished processing aggregated records.")
 
-				// Write the updated water data table to new files
-				if err := service.WriteDataTableToJSON(waterDataTable, "output/watertable_after_query.json"); err != nil {
+				// Print Super Summaries to console (optional)
+				fmt.Printf("Super Summary - Total Irrigation Gallons (C0,C1,C2): %.2f\n", totalIrrigationGallons)
+				fmt.Printf("Super Summary - Total Well 3 Gallons (C3Z1): %.2f\n", totalWell3Gallons)
+
+				// Write the updated water data table to new files, now including super summaries
+				if err := service.WriteDataTableToJSON(waterDataTable, totalIrrigationGallons, totalWell3Gallons, "output/watertable_after_query.json"); err != nil {
 					fmt.Fprintf(os.Stderr, "Error writing data table to JSON after query: %v\n", err)
 				}
-				if err := service.WriteDataTableAsTextReport(waterDataTable, "output/watertable_report_after_query.txt"); err != nil {
+				if err := service.WriteDataTableAsTextReport(waterDataTable, totalIrrigationGallons, totalWell3Gallons, "output/watertable_report_after_query.txt"); err != nil {
 					fmt.Fprintf(os.Stderr, "Error writing data table to text report after query: %v\n", err)
 				}
 			} else {
 				fmt.Println("No records returned from query, watertable not updated further.")
+				// Even if no records, write files with (zero) summaries if desired, or handle differently
+				// For now, assuming summaries will be zero and will be written by modified functions
+				if err := service.WriteDataTableToJSON(waterDataTable, 0.0, 0.0, "output/watertable_after_query.json"); err != nil {
+					fmt.Fprintf(os.Stderr, "Error writing data table to JSON after query: %v\n", err)
+				}
+				if err := service.WriteDataTableAsTextReport(waterDataTable, 0.0, 0.0, "output/watertable_report_after_query.txt"); err != nil {
+					fmt.Fprintf(os.Stderr, "Error writing data table to text report after query: %v\n", err)
+				}
 			}
 		}
 	}

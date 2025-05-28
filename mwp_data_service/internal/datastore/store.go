@@ -38,8 +38,14 @@ func InitializeTable(cfg config.ControllerConfig) WaterDataTable {
 			numZones = zones
 		}
 
+		// Determine the starting zone index for the current controller
+		currentZoneStartIndex := cfg.ZoneStartIndex
+		if controllerIDStr == "0" { // Controller 0 is special
+			currentZoneStartIndex = 0 // Zone 0 is valid for Controller 0
+		}
+
 		for j := 0; j < numZones; j++ {
-			zoneID := cfg.ZoneStartIndex + j
+			zoneID := currentZoneStartIndex + j
 			zoneIDStr := strconv.Itoa(zoneID)
 			table[controllerIDStr][zoneIDStr] = ZoneData{
 				// All float64 fields default to 0.0
