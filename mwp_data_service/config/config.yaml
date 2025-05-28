@@ -26,8 +26,8 @@ environments:
     mqtt:
       broker: "tcp://192.168.1.249:1883" # Example: local Mosquitto broker
       client_id: "mwp_data_aggregator_dev"
-      request_topic: "mwp/data/query_request_dev"
-      response_topic: "mwp/data/query_results_dev"
+      request_topic: "mwp/json/data/log/dataservice/query_request_dev"
+      response_topic: "mwp/json/data/log/dataservice/query_results_dev"
       # username: "dev_user" # Optional: Add if MQTT broker requires auth
       # password: "dev_password" # Optional: Add if MQTT broker requires auth
   production: # Settings used when -P flag is present
@@ -35,7 +35,7 @@ environments:
       # IMPORTANT: Replace with your actual production broker address
       broker: "tcp://192.168.1.250:1883"
       client_id: "mwp_data_aggregator_prod"
-      request_topic: "mwp/data/query_request"
-      response_topic: "mwp/data/query_results"
+      request_topic: "mwp/json/data/log/dataservice/query_request"
+      response_topic: "mwp/json/data/log/dataservice/query_results"
       # username: "prod_user" # Optional: Add if MQTT broker requires auth
       # password: "prod_password" # Optional: Add if MQTT broker requires auth 
