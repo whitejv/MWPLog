@@ -1,15 +1,15 @@
 {
-  "totalIrrigationGallons": 7390.581552430987,
+  "totalIrrigationGallons": 6915.177629515529,
   "totalWell3Gallons": 8408.674615740776,
   "details": {
     "0": {
       "0": {
-        "totalFlow": 50.47446337342262,
-        "totalSeconds": 508.1118053197861,
-        "avgPSI": 38.22789462250987,
-        "avgTempF": 70.9254412313146,
-        "avgAmps": 1.8116988316893314,
-        "gpm": 5.960239007828909,
+        "totalFlow": 46.76724973320961,
+        "totalSeconds": 457.10122776031494,
+        "avgPSI": 38.32849113268195,
+        "avgTempF": 70.94001476196021,
+        "avgAmps": 1.8168643454896771,
+        "gpm": 6.138760549258349,
         "updatedInLastQuery": true
       },
       "1": {
@@ -51,12 +51,12 @@
     },
     "1": {
       "1": {
-        "totalFlow": 137.1140752583742,
-        "totalSeconds": 1113.2424277067184,
-        "avgPSI": 43.34418418315329,
-        "avgTempF": 73.05340142262914,
-        "avgAmps": 1.4990027106140287,
-        "gpm": 7.389984706610373,
+        "totalFlow": 103.74034570157528,
+        "totalSeconds": 834.1837706565857,
+        "avgPSI": 43.401270635408174,
+        "avgTempF": 73.7762120473299,
+        "avgAmps": 1.493284186727995,
+        "gpm": 7.461690050856872,
         "updatedInLastQuery": true
       },
       "10": {
@@ -87,21 +87,21 @@
         "updatedInLastQuery": true
       },
       "13": {
-        "totalFlow": 663.2918588668108,
-        "totalSeconds": 3382.7749806642532,
-        "avgPSI": 45.492825966061815,
-        "avgTempF": 73.06220000372491,
-        "avgAmps": 1.4297546000962846,
-        "gpm": 11.764752831473844,
+        "totalFlow": 550.4639972001314,
+        "totalSeconds": 2803.6424275636673,
+        "avgPSI": 45.574073407040125,
+        "avgTempF": 73.58679044616677,
+        "avgAmps": 1.4270463975633505,
+        "gpm": 11.780332437296112,
         "updatedInLastQuery": true
       },
       "14": {
-        "totalFlow": 838.182534635067,
-        "totalSeconds": 3376.7743915319443,
-        "avgPSI": 47.079434901052174,
-        "avgTempF": 73.21255391016956,
-        "avgAmps": 1.4502814100675674,
-        "gpm": 14.893192806786383,
+        "totalFlow": 694.6226641237736,
+        "totalSeconds": 2797.6540117263794,
+        "avgPSI": 47.13492355510342,
+        "avgTempF": 73.77478372398598,
+        "avgAmps": 1.4475563226276353,
+        "gpm": 14.897253081594641,
         "updatedInLastQuery": true
       },
       "15": {
@@ -114,12 +114,12 @@
         "updatedInLastQuery": false
       },
       "16": {
-        "totalFlow": 727.7498050928116,
-        "totalSeconds": 2316.495542407036,
-        "avgPSI": 45.872871382454726,
-        "avgTempF": 73.74352277581144,
-        "avgAmps": 1.4996981945577268,
-        "gpm": 18.849588745677906,
+        "totalFlow": 545.8145575523376,
+        "totalSeconds": 1737.3717756271362,
+        "avgPSI": 45.903214673715965,
+        "avgTempF": 74.82221455154024,
+        "avgAmps": 1.4960172766574031,
+        "gpm": 18.849663562261423,
         "updatedInLastQuery": true
       },
       "17": {
@@ -641,10 +641,10 @@
       },
       "2": {
         "totalFlow": 0,
-        "totalSeconds": 2600.5707235336304,
-        "avgPSI": 83.5438965166532,
-        "avgTempF": 77.64912346766545,
-        "avgAmps": 1.1064311570573884,
+        "totalSeconds": 2601.571553707123,
+        "avgPSI": 83.55743635090349,
+        "avgTempF": 77.67019744837847,
+        "avgAmps": 1.1066101531167643,
         "gpm": 0,
         "updatedInLastQuery": true
       },

@@ -14,18 +14,19 @@ The system consists of several key components:
 2.  **Blynk Platform:** (External Cloud Service) Handles communication between the Blynk GUI App and the device-side interface application.
 3.  **MQTT Broker:** (External, likely local) A standard MQTT broker (e.g., Mosquitto) running locally or accessible on the network. It facilitates communication between the Go service and the C Blynk interface application.
 4.  **Blynk Interface Application (`BlynkLog`):** (Existing C App) This application connects *both* to the Blynk Platform (using Blynk protocols/MQTT) and the local MQTT Broker.
-    *   It receives user input/commands (like time window selection) *from* the Blynk Platform.
-    *   It translates these commands into standardized MQTT request messages.
-    *   It publishes these request messages to the Go service's request topic on the local MQTT Broker.
-    *   It subscribes to the Go service's response topic on the local MQTT Broker.
-    *   It receives the JSON results from the Go service.
-    *   It parses the JSON and updates the appropriate Blynk widgets via the Blynk Platform.
+    *   It receives user input/commands (like time window selection via a datastream, e.g., `downlink/ds/TimeWindow`) *from* the Blynk Platform.
+    *   It translates these commands into standardized MQTT request messages (e.g., `{"range": "12h"}`).
+    *   It publishes these request messages to the `mwp_data_service`'s request topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_request`).
+    *   It subscribes to the `mwp_data_service`'s response topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_results`).
+    *   It receives the full JSON watertable results from the `mwp_data_service`.
+    *   **(Future Work)** It will parse this JSON and update up to 155 specific Blynk datastreams via the Blynk Platform, corresponding to 31 predefined Controller/Zone rows of data.
 5.  **MWP Data Aggregation Service (This Go App):** The core component detailed in this plan. It connects *only* to the local MQTT Broker and InfluxDB.
-    *   Subscribes to the request topic on the local MQTT Broker.
+    *   Subscribes to the request topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_request`) to receive time window selection.
     *   Processes requests received from the `BlynkLog` app.
-    *   Aggregates data from InfluxDB.
-    *   Maintains the static internal state.
-    *   Publishes results (JSON) to the response topic on the local MQTT Broker.
+    *   Aggregates data from InfluxDB based on the received time window.
+    *   Maintains the static internal state (`WaterDataTable`).
+    *   Publishes results (full `WaterDataTable` as JSON) to the response topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_results`).
+    *   Generates `output/watertable_latest_report.txt`, now including the active time window at the top.
 6.  **InfluxDB:** (External) The time-series database storing the raw sensor data from the MWP system.
 
 **Communication Flow:**
@@ -33,15 +34,20 @@ The system consists of several key components:
 ```
 +-----------+      Blynk       +-----------------+      MQTT Request       +---------------------+      InfluxDB       +-----------+
 | Blynk GUI | <~~> Platform <~~> | BlynkLog C App  | ~~~~> (Request Topic) ~~~~> | Go Service (This App) | ~~~> Query ~~~> | InfluxDB  |
-|  (User)   |                   +-----------------+                           +---------------------+ <~~ Result ~~~    +-----------+
-+-----------+                          |         Local MQTT Broker           |        (Local)
-       ^                               |                                     |
-       | Update Widgets                | MQTT Response                       |
-       | (via Blynk Platform)          | (Response Topic)                    |
-       +-------------------------------|-------------------------------------+
-                                       v
-                                Parse JSON &
-                                Update Blynk
+|  (User)   |  (Time Window DS) | (Parse Blynk DS, | (e.g. "mwp/json/data/  |  (Receives Time      | (Uses Time     |           |
++-----------+                   |  Format & Pub   |  log/dataservice/     |   Window Request)   |  Window)       |           |
+                                |  Time Window)   |  query_request")      |                     |                |           |
+                                +-----------------+                       +---------------------+ <~~ Result ~~~    +-----------+
+                                       |         Local MQTT Broker           |        (Local)
+         Blynk Platform                |                                     |
+         (155 Datastreams              | MQTT Response                       |
+          for table data)              | (Response Topic)                    |
+               ^                       | (e.g. "mwp/json/data/log/          |
+               |                       |  dataservice/query_results")        |
+               |                       +-------------------------------------+\
+               +----------------------- (Subscribes, Parses Full JSON,       |
+                                        Populates Internal Table for Blynk)  |
+                                        (Future: Publishes to 155 DS)        |
 ```
 
 ## 3. Recommended Directory Layout (within `/home/pi/MWPLog`)
@@ -155,97 +161,100 @@ MWPLog/
     *   Loads configuration from `config.yaml`.
     *   Initializes the static `WaterDataTable`.
     *   Creates an InfluxDB client.
-    *   **Currently:** Executes a one-off data aggregation:
-        1.  Calls `datastore.ResetUpdateStatus`.
-        2.  Calls `aggregation.QueryAggregatedData` with a hardcoded time range (e.g., "-24h").
-        3.  Loops through query results, calculates GPM (`TotalFlow / (TotalSeconds / 60.0)`), and calls `datastore.UpdateEntry`.
-        4.  Writes the `WaterDataTable` to `output/watertable_initial.json`, `output/watertable_initial_report.txt` (before query) and `output/watertable_after_query.json`, `output/watertable_report_after_query.txt` (after query attempt). The text report displays "TotalMinutes".
-    *   Exits after the one-off execution.
+    *   Sets up MQTT client, subscribes to `mqttConfig.RequestTopic` (e.g., `mwp/json/data/log/dataservice/query_request`) and defines `mqttMessageHandler` to process incoming time window requests.
+    *   The `mqttMessageHandler` triggers `processAndPublishData` with the received time window.
+    *   `processAndPublishData` function:
+        1.  Queries InfluxDB using the provided `timeRange`.
+        2.  Updates the internal `WaterDataTable`.
+        3.  Publishes the complete `ReportData` (containing `WaterDataTable`) as a JSON string to `mqttConfig.ResponseTopic` (e.g., `mwp/json/data/log/dataservice/query_results`).
+        4.  Writes `output/watertable_latest.json`.
+        5.  Writes `output/watertable_latest_report.txt`, now prepended with the `timeRange` used for the query.
+    *   Initial data load on startup uses a command-line specified or default `initialQueryRange`.
+    *   Handles OS signals for graceful shutdown.
 *   **`internal/service/file_writer.go`:**
-    *   `WriteDataTableToJSON`: Writes the `WaterDataTable` to a JSON file.
-    *   `WriteDataTableAsTextReport`: Writes the `WaterDataTable` to a human-readable, formatted text file (displays TotalMinutes).
-*   *(Planned for `internal/service/service.go`): Main service loop, orchestration of MQTT request to InfluxDB query and response, signal handling.*
+    *   `WriteDataTableToJSON`: Writes the `ReportData` to a JSON file.
+    *   `WriteDataTableAsTextReport`: Function signature updated to `WriteDataTableAsTextReport(..., timeWindow string)`. It now prepends `Time Window: <timeWindow>` to the human-readable text report.
+*   *(Planned for `internal/service/service.go`): Further refinements to service orchestration if needed beyond `main.go`.*
 
-## 5. Development Progress & Current Status (as of 2024-07-26)
+## 5. Development Progress & Current Status
 
-The `mwp_data_service` application has been developed to a point where it can perform a one-time data aggregation from InfluxDB and output the results to files.
+The system has progressed significantly, with both `mwp_data_service` and `blynkLog.c` achieving key milestones in their interaction.
 
-**Implemented Features:**
+**`mwp_data_service` Implemented Features:**
 
-*   **Project Structure:** The Go module `mwp_data_service` is set up with the planned internal package structure (`cmd`, `config`, `datastore`, `aggregation`, `service`).
-*   **Configuration:**
-    *   `config.yaml` defines InfluxDB, MQTT (for dev/prod), logging, and controller/zone parameters (including `total_controllers`).
-    *   `internal/config/config.go` loads and parses this YAML.
-*   **Data Storage (`internal/datastore`):**
-    *   `ZoneData` struct includes fields for `TotalFlow`, `TotalSeconds`, `AvgPSI`, `AvgTempF`, `AvgAmps`, and a service-calculated `GPM`.
-    *   `WaterDataTable` (map-based) stores `ZoneData` for all configured controllers and zones.
-    *   `InitializeTable` correctly populates the table based on configuration.
-    *   `ResetUpdateStatus` and `UpdateEntry` functions are implemented.
-*   **InfluxDB Interaction (`internal/aggregation`):**
-    *   `NewInfluxDBClient` function creates an InfluxDB v2 client.
-    *   `QueryAggregatedData` function constructs and executes a Flux query to fetch `totalFlow`, `totalSeconds`, `avgPSI`, `avgTempF`, `avgAmps`. It includes filtering for valid tags and uses `pivot` for structuring results.
-*   **Application Core (`cmd/mwp_data_service/main.go`):**
-    *   Parses command-line arguments for configuration path and environment.
-    *   Initializes the `WaterDataTable`.
-    *   Writes the initial (empty) table to `output/watertable_initial.json` and `output/watertable_initial_report.txt`.
-    *   Establishes a connection to InfluxDB.
-    *   Performs a data aggregation for a hardcoded time window (e.g., "-24h").
-    *   Calculates GPM for each retrieved record.
-    *   Updates the `WaterDataTable` with fetched and calculated data.
-    *   Writes the updated table to `output/watertable_after_query.json` and `output/watertable_report_after_query.txt`.
+*   **Project Structure, Configuration, Data Storage, InfluxDB Interaction:** Largely as previously documented in section 4.
+*   **MQTT Integration:**
+    *   Connects to MQTT broker based on environment settings (dev/prod) defined in `config.yaml`.
+    *   Subscribes to `mqttConfig.RequestTopic` (e.g., `mwp/json/data/log/dataservice/query_request`) from `config.yaml`.
+    *   `mqttMessageHandler` in `cmd/mwp_data_service/main.go` receives JSON payloads like `{"range": "12h"}`, extracts the time window, and triggers data processing.
+*   **Core Logic (`cmd/mwp_data_service/main.go`):**
+    *   `processAndPublishData(timeRange string)` function:
+        *   Queries InfluxDB using the provided `timeRange`.
+        *   Updates the internal `WaterDataTable`.
+        *   Publishes the complete `ReportData` (which includes `Details: waterDataTable` and super summaries) as a JSON string to `mqttConfig.ResponseTopic` (e.g., `mwp/json/data/log/dataservice/query_results`) from `config.yaml`.
 *   **Output Formatting (`internal/service/file_writer.go`):**
-    *   Provides functions to write the `WaterDataTable` to both JSON and a formatted text file.
-    *   The text report displays run time as "TotalMinutes" for better readability.
-*   **Build Process:** The application is built using `make` (presumably via CMake calling Go build tools).
+    *   `WriteDataTableAsTextReport` function now accepts the current `timeWindow` as a parameter and prepends "Time Window: [timeWindow]" to `output/watertable_latest_report.txt` and `output/watertable_initial_report.txt`.
+    *   `WriteDataTableToJSON` writes a `ReportData` struct (including summaries and details) to `output/watertable_latest.json`.
+*   **"Now" Mode Functionality:**
+    *   Implemented with a `nowModeManager` goroutine, allowing frequent updates (e.g., every 1 second for `"-1m"` data) for a configurable duration (e.g., 60 seconds), after which it reverts to the last specified or default range.
+    *   Activated by an MQTT request with `{"range": "now"}`.
+*   **Operational Mode:** Runs as a continuous service, performing an initial data load and then responding to MQTT requests for different time windows or operating in "now" mode. Handles OS signals for graceful shutdown.
 
-**Current Operational Mode:**
+**`BlynkLog.c` Implemented Features (relevant to `mwp_data_service` interaction):**
 
-The application runs as a command-line tool. It executes the data aggregation sequence once for a hardcoded time window and then exits. It does not yet operate as a continuous service or interact with MQTT.
+*   **Time Window Selection & Publishing to `mwp_data_service`:**
+    *   Subscribes to a Blynk datastream (e.g., `downlink/ds/TimeWindow`) to receive an integer representing a user-selected time window.
+    *   Maps this integer to a predefined time window string (e.g., "1h", "12h", "May") using `timeWindowMap`.
+    *   Formats this string into a JSON payload (e.g., `{"range": "12h"}`).
+    *   Publishes this JSON to `mwp_data_service`'s request topic (`MWP_DATA_SERVICE_QUERY_TOPIC`, e.g., `mwp/json/data/log/dataservice/query_request`).
+*   **Receiving and Parsing Watertable Data from `mwp_data_service`:**
+    *   Subscribes to `mwp_data_service`'s response topic (`MWP_WATERTABLE_JSON_TOPIC`, e.g., `mwp/json/data/log/dataservice/query_results`).
+    *   The `msgarrvd` callback for the main `client`:
+        *   Parses the incoming JSON payload from `mwp_data_service`.
+        *   Navigates the JSON structure (specifically `parsed_json.details.controller_key.zone_key`).
+        *   Populates an internal C array (`static BlynkDataRow blynk_display_table[31]`) with data for 31 predefined Controller/Zone combinations defined in `json_to_blynk_map`.
+        *   Each entry in `blynk_display_table` stores: `zone_number`, `total_flow`, `total_minutes` (calculated), `avg_psi`, `gpm`, and a `data_valid` flag.
+*   **Error Handling:** Basic JSON parsing error checks are in place.
+*   **MQTT Client Management:** Separate MQTT clients for Blynk cloud (`blynkClient`) and local broker (`client`) are managed, including connection, callbacks, and subscription logic.
+
+**Current System State:**
+
+*   The data pipeline for time window selection and data retrieval is functional:
+    1.  User selects time window in Blynk App.
+    2.  `BlynkLog.c` receives this, translates it, and sends it as an MQTT request to `mwp_data_service`.
+    3.  `mwp_data_service` receives the request, queries InfluxDB using the specified time window.
+    4.  `mwp_data_service` generates `watertable_latest_report.txt` (including the time window header) and `watertable_latest.json`.
+    5.  `mwp_data_service` publishes the full watertable JSON data to another MQTT topic.
+    6.  `BlynkLog.c` receives this JSON, parses it, and populates its internal `blynk_display_table` with the 31 specified rows of data.
+*   Both applications are in a stable state regarding this interaction.
 
 ## 6. Next Steps / Open Questions
 
-The immediate focus is to transition the application from a one-off execution tool to a continuously running service that responds to MQTT requests.
+**For `BlynkLog.c` (High Priority):**
 
-*   **MQTT Integration (High Priority):**
-    *   Implement MQTT client setup in `internal/mqtt/client.go` (connect, handle Paho library).
-    *   Subscribe to the `request_topic` defined in `config.yaml`.
-    *   Implement a message callback (`onMessageReceived`) to:
-        *   Parse the incoming MQTT message payload (expected to be a time range string like "24h", "7d", or a simple JSON like `{"range": "24h"}`).
-        *   Validate the requested time range against a predefined set of allowed values or formats.
-        *   If valid, trigger the data aggregation process (passing the time range).
-    *   Implement a function `PublishResults(client MQTTClient, topic string, dataTable datastore.WaterDataTable)` to:
-        *   Convert the `WaterDataTable` into the required JSON array format (iterating through all C/Z, creating objects with C, Z, and `ZoneData` fields).
-        *   Publish the JSON string to the `response_topic`.
-*   **Service Logic & Main Loop (High Priority):**
-    *   Refactor `cmd/mwp_data_service/main.go` to:
-        *   Initialize components (config, data table, InfluxDB client, MQTT client).
-        *   Start the MQTT client and its listeners.
-        *   Enter a main service loop that waits for shutdown signals (or relies on MQTT Paho library's internal looping).
-    *   Develop `internal/service/service.go` to orchestrate the flow:
-        *   On receiving an MQTT request (via a channel or callback from `internal/mqtt`):
-            1.  Call `datastore.ResetUpdateStatus(waterDataTable)`.
-            2.  Call `aggregation.QueryAggregatedData(influxClient, requestedTimeRange, cfg.InfluxDB)`.
-            3.  Loop through query results, calculate GPM, and call `datastore.UpdateEntry(...)`.
-            4.  Call `mqtt.PublishResults(...)`.
-    *   Implement OS signal handling (SIGINT, SIGTERM) in `main.go` or `internal/service` for graceful shutdown:
-        *   Disconnect the MQTT client.
-        *   Close the InfluxDB client.
-*   **Logging:**
-    *   Replace `fmt.Printf` and `fmt.Fprintf(os.Stderr, ...)` with a proper logging solution (e.g., standard `log` package configured for levels and file output based on `cfg.Logging`).
-*   **Error Handling and Resilience:**
-    *   Review and enhance error handling for InfluxDB queries, MQTT operations, file I/O, etc.
-    *   Consider adding retry mechanisms for temporary InfluxDB or MQTT connection issues if the service is intended to be long-running without manual restarts for minor glitches.
-*   **Configuration Security:**
-    *   The `YOUR_INFLUXDB_TOKEN_HERE` placeholder in `config.yaml` must be addressed. For production, using environment variables to supply the token to the application is strongly recommended over hardcoding it. The application can be modified to read this from an environment variable at startup.
-*   **Refinement & Testing:**
-    *   Thoroughly test the InfluxDB Flux query with various data scenarios.
-    *   Test the MQTT request/response cycle.
-    *   Consider adding unit tests for critical functions (e.g., GPM calculation, time range validation).
-*   **Deployment & Operation (Later Stage):**
-    *   Update/finalize `start_mwp_service.sh` and `stop_mwp_service.sh` scripts to manage the service.
-    *   Configure `cron` jobs or a systemd service for robust, persistent operation and auto-restarts if necessary.
-*   **Build System:**
-    *   Ensure `mwp_data_service/CMakeLists.txt` correctly handles the Go build process, dependencies, and installs the final executable to the `bin/` directory as part of the main project's `make install` target.
+*   **Publish Table Data to Blynk Datastreams:**
+    *   **Define Datastream Aliases:** Finalize the exact naming convention for the 155 Blynk datastream aliases that will be created in the Blynk console (e.g., pattern `C{controller_idx}Z{zone_idx}_{metric_suffix}` like `C0Z0_zone`, `C0Z0_flow`, etc.).
+    *   **Define Blynk Publishing Base Topic:** Specify the MQTT topic prefix for publishing to these datastreams (e.g., `"ds"` or an equivalent to the `BLYNK_DS` macro used in prior examples).
+    *   **Implement Publishing Logic:**
+        *   Create a new function or modify the main loop/`msgarrvd` to iterate through the `blynk_display_table` (31 rows) after it has been populated.
+        *   For each row where `data_valid` is true:
+            *   Format each of the 5 data values (zone number, total flow, total minutes, avg psi, gpm) as a string.
+            *   Construct the full MQTT topic for each of the 5 corresponding Blynk datastream aliases for that row.
+            *   Publish these 5 values to their respective datastreams using the `blynkClient`.
+    *   **Handling Invalid Data:** Decide how to represent rows in Blynk if `data_valid` is false for an entry in `blynk_display_table` (e.g., send "0", a specific placeholder like "N/A", or skip updating those datastreams).
+
+**For `mwp_data_service` (Lower Priority / Refinements):**
+
+*   **Logging:** Transition from `fmt.Printf` and `fmt.Fprintf(os.Stderr, ...)` to a more structured logging solution (e.g., standard Go `log` package or a third-party library) for better log management, levels, and potential file output based on `cfg.Logging`.
+*   **Error Handling and Resilience:** Review and potentially enhance error handling for InfluxDB queries, MQTT operations. Paho's auto-reconnect helps, but application-level resilience could be reviewed.
+*   **Configuration Security (InfluxDB Token):** Emphasize using environment variables for sensitive data like the InfluxDB token in production, rather than hardcoding in `config.yaml`.
+*   **Testing:** Expand testing, potentially including unit tests for critical logic.
+
+**General:**
+
+*   Perform thorough end-to-end testing of the complete data flow from Blynk UI to `mwp_data_service` and back to Blynk UI (once `BlynkLog.c` publishing is implemented).
+*   Review and update deployment scripts (`start_mwp_service.sh`, etc.) for the continuous operational mode of `mwp_data_service`.
+*   Consider using systemd for managing the `mwp_data_service` and `blynkLog` processes for robustness and auto-restarts.
 
 ## 7. Status of Existing `log_data` Tools (`logit`, `logitdebug`)
 
@@ -256,116 +265,3 @@ It is explicitly intended that the existing Go command-line tools located in the
 *   **Build Process:** These tools are now built as part of the unified CMake build process defined in `log_data/CMakeLists.txt` and the root `CMakeLists.txt`.
 *   **Installation:** They are installed alongside the other project executables into `/home/pi/MWPLog/bin` via `make install`.
 *   **Maintenance Note:** If future changes are made to the InfluxDB schema or core aggregation logic within the `mwp_data_service`, corresponding manual updates may be required for `logit` and `logitdebug` if they need to reflect those changes.
-
-## 8. Development Progress & Current Status (as of 2024-07-29)
-
-Significant progress has been made to transition `mwp_data_service` from a single-execution tool to a continuously running, MQTT-driven service. The core functionality for dynamic data aggregation based on external requests is now largely in place.
-
-**Key Accomplishments Since Last Update:**
-
-*   **Flexible Time Ranges for Queries:**
-    *   The service now accepts a flexible time range string via a command-line flag (`-range` / `-r`) for its *initial* data load. This replaced the previously hardcoded range.
-    *   Supported formats include relative durations (e.g., "24h", "7d"), specific month names (e.g., "June", defaulting to the current year), and specific years (e.g., "2023", "2024").
-    *   The `aggregation.QueryAggregatedData` function in `internal/aggregation/aggregator.go` was enhanced to parse these various formats and construct the correct Flux query time parameters (UTC-based for months/years, relative for durations).
-    *   Help text for the command-line flag was updated to reflect these new capabilities.
-*   **Controller 0 / Zone 0 Handling:**
-    *   Modified `InitializeTable` in `internal/datastore/store.go` to specifically include `Zone 0` when `ControllerID` is "0", overriding the general `zone_start_index` from the configuration for this specific controller. This ensures data for C0Z0 is correctly processed and included in reports.
-*   **Super Summaries Implementation:**
-    *   The service now calculates and includes "Super Summaries" in its output:
-        *   **Total Irrigation Gallons:** Sum of `TotalFlow` for Controllers 0, 1, and 2.
-        *   **Total Well 3 Gallons:** `TotalFlow` for Controller 3, Zone 1.
-    *   These summaries are calculated in `cmd/mwp_data_service/main.go` after aggregated records are fetched.
-    *   `internal/service/file_writer.go` was updated:
-        *   `WriteDataTableToJSON` now uses a new `ReportData` struct that encapsulates the super summaries and the main `WaterDataTable` details, which is then marshaled to JSON.
-        *   `WriteDataTableAsTextReport` now prepends the text report with these super summary values.
-        *   Initial calls to these write functions (for `watertable_initial.json/txt`) were updated to pass zero values for summaries before any data is queried.
-*   **Transition to Continuous MQTT-Driven Service (Stage 1 - Core MQTT):**
-    *   **MQTT Integration:**
-        *   Added `github.com/eclipse/paho.mqtt.golang` as a dependency.
-        *   `cmd/mwp_data_service/main.go` now initializes an MQTT client, connecting to the broker defined in `config.yaml` (respecting development/production environments).
-        *   The service subscribes to a `range_request` topic (e.g., `mwp/json/log/dataservice/range_request`).
-        *   The service publishes the full `ReportData` (including super summaries and the `WaterDataTable`) as a JSON payload to a `watertable_update` topic (e.g., `mwp/json/log/dataservice/watertable_update`).
-    *   **Application Lifecycle:**
-        *   The `main` function was refactored to run continuously, listening for OS interrupt signals (SIGINT, SIGTERM) for graceful shutdown.
-        *   On startup, it performs an initial data load based on the `-range` command-line flag (cannot be "now") and publishes this initial state.
-        *   A `processAndPublishData(timeRange string)` function was introduced to encapsulate querying, data processing, summary calculation, MQTT publishing, and local file writing (`watertable_latest.json`, `watertable_latest_report.txt`).
-        *   An MQTT message handler (`mqttMessageHandler`) receives new range requests. For non-"now" requests, it triggers `processAndPublishData` with the new range.
-    *   **Configuration Update:** Users are reminded to update `config.yaml` with the new `request_topic` and `response_topic` names.
-*   **"Now" Mode Functionality (Stage 2 - Dynamic Updates):**
-    *   **State Management:** Introduced global variables (`isInNowMode`, `nowModeTicker`, `nowModeTimeoutTimer`, `lastNonNowRange`, `nowModeControlChan`, `shutdownChan`) to manage the "now" mode state.
-    *   **`nowModeManager` Goroutine:**
-        *   A dedicated goroutine now manages the lifecycle of "now" mode.
-        *   It listens on `nowModeControlChan` for incoming range requests from the MQTT handler.
-        *   **Entering "Now" Mode:** If `{"range": "now"}` is received:
-            *   Any existing "now" mode is stopped (ticker/timer reset).
-            *   A 1-second ticker (`NowModeUpdateInterval`) and a 60-second timeout timer (`NowModeDuration`) are started.
-            *   `processAndPublishData("-1m")` is called immediately and then on each subsequent tick.
-        *   **Exiting/Interrupting "Now" Mode:**
-            *   If a non-"now" range is received via MQTT: "now" mode is stopped, `lastNonNowRange` is updated, and `processAndPublishData` is called with the new range.
-            *   If another `{"range": "now"}` is received: The current "now" mode is reset (timers restarted).
-            *   **Timeout:** If the 60-second `nowModeTimeoutTimer` expires: "now" mode stops, and `processAndPublishData` is called with `lastNonNowRange` (defaulting to `DefaultRangeAfterNow` like "1h", or the actual last non-"now" range provided).
-        *   **Shutdown:** Responds to `shutdownChan` for graceful cleanup.
-    *   **MQTT Handler Update:** The `mqttMessageHandler` now simply forwards the `payload.Range` to the `nowModeControlChan`, centralizing the logic in `nowModeManager`.
-    *   **Initial Range Constraint:** The `-range` command-line flag explicitly disallows "now" on startup.
-
-**Current Operational Mode:**
-
-The application now runs as a continuous service. It performs an initial data load based on a command-line specified time range. It then listens for MQTT messages on `mwp/json/log/dataservice/range_request`. It can process specific time range requests or enter a "now" mode, which provides 1-second updates for 60 seconds before reverting to a default/previous range. All data table updates, including super summaries, are published as JSON to `mwp/json/log/dataservice/watertable_update` and also written to local `watertable_latest.json` and `watertable_latest_report.txt` files.
-
-**Outstanding Items from Previous "Next Steps" (and their current status):**
-
-*   **MQTT Integration:** Largely complete. Client setup, subscription, message handling, and publishing are implemented.
-*   **Service Logic & Main Loop:** Implemented. `main.go` now supports continuous operation and graceful shutdown. The `nowModeManager` goroutine handles the dynamic request processing flow.
-*   **Logging:** Still primarily uses `fmt.Printf` and `fmt.Fprintf`. Transition to a formal logging solution is pending.
-*   **Error Handling and Resilience:** Basic error handling is in place for MQTT, InfluxDB. More advanced retry mechanisms are not yet implemented.
-*   **Configuration Security (InfluxDB Token):** Placeholder token issue still exists. Best practice is to use environment variables.
-*   **Refinement & Testing:** Core functionality tested through described scenarios. Comprehensive unit testing is an area for future improvement.
-*   **Deployment & Operation:** Scripts (`start_mwp_service.sh`, etc.) would need review/updates for the new continuous operational mode.
-*   **Build System:** Assumed to be functional; CMake and Go build processes handle the application build.
-
-## 9. Next Steps / Open Questions
-
-The immediate focus is to transition the application from a one-off execution tool to a continuously running service that responds to MQTT requests.
-
-*   **MQTT Integration (High Priority):**
-    *   Implement MQTT client setup in `internal/mqtt/client.go` (connect, handle Paho library).
-    *   Subscribe to the `request_topic` defined in `config.yaml`.
-    *   Implement a message callback (`onMessageReceived`) to:
-        *   Parse the incoming MQTT message payload (expected to be a time range string like "24h", "7d", or a simple JSON like `{"range": "24h"}`).
-        *   Validate the requested time range against a predefined set of allowed values or formats.
-        *   If valid, trigger the data aggregation process (passing the time range).
-    *   Implement a function `PublishResults(client MQTTClient, topic string, dataTable datastore.WaterDataTable)` to:
-        *   Convert the `WaterDataTable` into the required JSON array format (iterating through all C/Z, creating objects with C, Z, and `ZoneData` fields).
-        *   Publish the JSON string to the `response_topic`.
-*   **Service Logic & Main Loop (High Priority):**
-    *   Refactor `cmd/mwp_data_service/main.go` to:
-        *   Initialize components (config, data table, InfluxDB client, MQTT client).
-        *   Start the MQTT client and its listeners.
-        *   Enter a main service loop that waits for shutdown signals (or relies on MQTT Paho library's internal looping).
-    *   Develop `internal/service/service.go` to orchestrate the flow:
-        *   On receiving an MQTT request (via a channel or callback from `internal/mqtt`):
-            1.  Call `datastore.ResetUpdateStatus(waterDataTable)`.
-            2.  Call `aggregation.QueryAggregatedData(influxClient, requestedTimeRange, cfg.InfluxDB)`.
-            3.  Loop through query results, calculate GPM, and call `datastore.UpdateEntry(...)`.
-            4.  Call `mqtt.PublishResults(...)`.
-    *   Implement OS signal handling (SIGINT, SIGTERM) in `main.go` or `internal/service` for graceful shutdown:
-        *   Disconnect the MQTT client.
-        *   Close the InfluxDB client.
-*   **Logging:**
-    *   Replace `fmt.Printf` and `fmt.Fprintf` with a proper logging solution (e.g., standard `log` package configured for levels and file output based on `cfg.Logging`).
-*   **Error Handling and Resilience:**
-    *   Review and enhance error handling for InfluxDB queries, MQTT operations, file I/O, etc.
-    *   Consider adding retry mechanisms for temporary InfluxDB or MQTT connection issues if the service is intended to be long-running without manual restarts for minor glitches.
-*   **Configuration Security:**
-    *   The `YOUR_INFLUXDB_TOKEN_HERE` placeholder in `config.yaml` must be addressed. For production, using environment variables to supply the token to the application is strongly recommended over hardcoding it. The application can be modified to read this from an environment variable at startup.
-*   **Refinement & Testing:**
-    *   Thoroughly test the InfluxDB Flux query with various data scenarios.
-    *   Test the MQTT request/response cycle.
-    *   Consider adding unit tests for critical functions (e.g., GPM calculation, time range validation).
-*   **Deployment & Operation:**
-    *   Update/finalize `start_mwp_service.sh` and `stop_mwp_service.sh` scripts to manage the service.
-    *   Configure `cron` jobs or a systemd service for robust, persistent operation and auto-restarts if necessary.
-*   **Build System:**
-    *   Ensure `mwp_data_service/CMakeLists.txt` correctly handles the Go build process, dependencies, and installs the final executable to the `bin/` directory as part of the main project's `make install` target.
-
-## 10. Status of Existing `log_data` Tools (`logit`, `

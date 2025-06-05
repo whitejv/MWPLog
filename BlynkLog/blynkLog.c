@@ -40,6 +40,7 @@
 // Moved to file scope
 static MQTTClient client = NULL;
 static volatile int blynkClient_initialized_and_connected = 0; // volatile as it can be changed by callback
+static MQTTClient blynkClient = NULL; // Moved to file scope for access in msgarrvd
 
 int verbose = FALSE;
 int disc_finished = 0;
@@ -249,7 +250,78 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
         }
 
         json_object_put(parsed_json); // Free the root json object
-        printf("Finished processing watertable JSON data.\n");
+        printf("Finished processing watertable JSON data.\\n");
+
+        // Now, send data from blynk_display_table to Blynk using batch_ds via a loop
+        if (blynkClient_initialized_and_connected && blynkClient != NULL) {
+            json_object *blynk_payload_obj = json_object_new_object();
+            if (blynk_payload_obj == NULL) {
+                fprintf(stderr, "Failed to create JSON object for Blynk batch_ds payload.\\n");
+            } else {
+                int items_added_to_payload = 0;
+                char ds_name_buffer[16]; // Buffer for datastream names like "V155gpm"
+
+                // Loop for the first 3 rows for prototyping
+                // Original: for (int i = 0; i < BLYNK_TABLE_ROW_COUNT; i++) {
+                for (int i = 0; i < 3 && i < BLYNK_TABLE_ROW_COUNT; i++) { // Send first 3 rows, ensure not exceeding actual count
+                    if (blynk_display_table[i].data_valid) {
+                        // Zone: V<N>zone where N = i*5 + 1
+                        snprintf(ds_name_buffer, sizeof(ds_name_buffer), "V%dzone", i * 5 + 1);
+                        json_object_object_add(blynk_payload_obj, ds_name_buffer, json_object_new_int(blynk_display_table[i].zone_number));
+
+                        // Flow: V<N>flow where N = i*5 + 2
+                        snprintf(ds_name_buffer, sizeof(ds_name_buffer), "V%dflow", i * 5 + 2);
+                        json_object_object_add(blynk_payload_obj, ds_name_buffer, json_object_new_double(blynk_display_table[i].total_flow));
+
+                        // Minutes: V<N>min where N = i*5 + 3
+                        snprintf(ds_name_buffer, sizeof(ds_name_buffer), "V%dmin", i * 5 + 3);
+                        json_object_object_add(blynk_payload_obj, ds_name_buffer, json_object_new_double(blynk_display_table[i].total_minutes));
+
+                        // PSI: V<N>psi where N = i*5 + 4
+                        snprintf(ds_name_buffer, sizeof(ds_name_buffer), "V%dpsi", i * 5 + 4);
+                        json_object_object_add(blynk_payload_obj, ds_name_buffer, json_object_new_double(blynk_display_table[i].avg_psi));
+
+                        // GPM: V<N>gpm where N = i*5 + 5
+                        snprintf(ds_name_buffer, sizeof(ds_name_buffer), "V%dgpm", i * 5 + 5);
+                        json_object_object_add(blynk_payload_obj, ds_name_buffer, json_object_new_double(blynk_display_table[i].gpm));
+                        
+                        items_added_to_payload++;
+                    } else {
+                        if (verbose) {
+                             printf("Skipping row %d for Blynk batch: data not valid.\\n", i);
+                        }
+                    }
+                }
+
+                if (items_added_to_payload > 0) {
+                    const char *json_payload_str = json_object_to_json_string_ext(blynk_payload_obj, JSON_C_TO_STRING_PLAIN);
+                    if (json_payload_str == NULL) {
+                        fprintf(stderr, "Failed to convert Blynk batch_ds payload to JSON string.\\n");
+                    } else {
+                        MQTTClient_message pubmsg = MQTTClient_message_initializer;
+                        MQTTClient_deliveryToken token;
+                        pubmsg.payload = (void*)json_payload_str;
+                        pubmsg.payloadlen = strlen(json_payload_str);
+                        pubmsg.qos = QOS;
+                        pubmsg.retained = 0;
+
+                        printf("Publishing to Blynk topic '%s': %s\\n", BLYNK_TOPIC, json_payload_str);
+                        int rc_blynk_pub = MQTTClient_publishMessage(blynkClient, BLYNK_TOPIC, &pubmsg, &token);
+
+                        if (rc_blynk_pub != MQTTCLIENT_SUCCESS) {
+                            fprintf(stderr, "Failed to publish batch data to Blynk topic %s, rc %d\\n", BLYNK_TOPIC, rc_blynk_pub);
+                        } else {
+                            printf("Successfully published batch data to Blynk. Token: %d\\n", token);
+                        }
+                    }
+                } else {
+                    printf("No valid data rows found in blynk_display_table. Nothing to send to Blynk.\\n");
+                }
+                json_object_put(blynk_payload_obj); // Free the blynk_payload_obj
+            }
+        } else {
+            printf("Blynk client not connected. Cannot send batch data to Blynk.\\n");
+        }
 
     } else {
         // Existing logic for other messages on the main client (if any)
@@ -629,7 +701,7 @@ int main(int argc, char *argv[])
    }
 
    // --- Blynk Client (blynkClient) Setup and Management --- 
-   MQTTClient blynkClient = NULL; // Initialize Blynk client handle to NULL
+   // MQTTClient blynkClient = NULL; // Moved to file scope
    int rc_loop_status; // To store return status from new loop()
 
    // Initial attempt to connect the Blynk client
