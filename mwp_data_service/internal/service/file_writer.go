@@ -54,7 +54,8 @@ func WriteDataTableToJSON(dataTable datastore.WaterDataTable, totalIrrigationGal
 
 // WriteDataTableAsTextReport formats the WaterDataTable into a human-readable text report,
 // prepending it with super summaries, and writes it to the specified filename.
-func WriteDataTableAsTextReport(dataTable datastore.WaterDataTable, totalIrrigationGallons, totalWell3Gallons float64, filename string) error {
+// It now includes the time window used for the report.
+func WriteDataTableAsTextReport(dataTable datastore.WaterDataTable, totalIrrigationGallons, totalWell3Gallons float64, filename string, timeWindow string) error {
 	// Ensure the output directory exists
 	dir := filepath.Dir(filename)
 	if dir != "." && dir != "" { // Check if a directory part exists
@@ -64,6 +65,9 @@ func WriteDataTableAsTextReport(dataTable datastore.WaterDataTable, totalIrrigat
 	}
 
 	var report strings.Builder
+
+	// Add Time Window information at the top
+	report.WriteString(fmt.Sprintf("Time Window: %s\n\n", timeWindow))
 
 	// Add Super Summaries at the top
 	report.WriteString(fmt.Sprintf("Super Summary - Total Irrigation Gallons (C0, C1, C2): %.2f\n", totalIrrigationGallons))

@@ -104,14 +104,8 @@ BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o: BlynkLog/blynkLog.c \
   /usr/local/include/MQTTProperties.h \
   /usr/local/include/MQTTReasonCodes.h \
   /usr/local/include/MQTTSubscribeOpts.h \
-  /usr/local/include/MQTTClientPersistence.h \
-  /home/pi/MWPCore/include/water.h \
-  /home/pi/MWPCore/include/alert.h \
-  /usr/lib/gcc/aarch64-linux-gnu/12/include/stdbool.h \
-  /home/pi/MWPCore/mylib/msgarrvd.c
+  /usr/local/include/MQTTClientPersistence.h
 
-
-/home/pi/MWPCore/include/water.h:
 
 /usr/local/include/MQTTExportDeclarations.h:
 
@@ -140,8 +134,6 @@ BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o: BlynkLog/blynkLog.c \
 /usr/include/json-c/arraylist.h:
 
 /usr/include/aarch64-linux-gnu/bits/types/struct_tm.h:
-
-/home/pi/MWPCore/include/alert.h:
 
 /usr/include/time.h:
 
@@ -263,8 +255,6 @@ BlynkLog/blynkLog.c:
 
 /usr/include/aarch64-linux-gnu/bits/thread-shared-types.h:
 
-/usr/lib/gcc/aarch64-linux-gnu/12/include/stdbool.h:
-
 /usr/include/aarch64-linux-gnu/bits/wordsize.h:
 
 /usr/local/include/MQTTReasonCodes.h:
@@ -284,8 +274,6 @@ BlynkLog/blynkLog.c:
 /usr/include/aarch64-linux-gnu/bits/struct_rwlock.h:
 
 /usr/include/aarch64-linux-gnu/bits/stdint-intn.h:
-
-/home/pi/MWPCore/mylib/msgarrvd.c:
 
 /usr/include/aarch64-linux-gnu/bits/flt-eval-method.h:
 

@@ -151,7 +151,7 @@ func processAndPublishData(timeRange string) {
 	if err := service.WriteDataTableToJSON(waterDataTable, totalIrrigationGallons, totalWell3Gallons, "output/watertable_latest.json"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing latest data table to JSON: %v\n", err)
 	}
-	if err := service.WriteDataTableAsTextReport(waterDataTable, totalIrrigationGallons, totalWell3Gallons, "output/watertable_latest_report.txt"); err != nil {
+	if err := service.WriteDataTableAsTextReport(waterDataTable, totalIrrigationGallons, totalWell3Gallons, "output/watertable_latest_report.txt", timeRange); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing latest data table to text report: %v\n", err)
 	}
 }
@@ -406,7 +406,7 @@ func main() {
 	if err := service.WriteDataTableToJSON(waterDataTable, 0.0, 0.0, "output/watertable_initial.json"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing initial data table to JSON file: %v\n", err)
 	}
-	if err := service.WriteDataTableAsTextReport(waterDataTable, 0.0, 0.0, "output/watertable_initial_report.txt"); err != nil {
+	if err := service.WriteDataTableAsTextReport(waterDataTable, 0.0, 0.0, "output/watertable_initial_report.txt", initialQueryRange); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing initial data table to text report file: %v\n", err)
 	}
 

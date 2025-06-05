@@ -255,4 +255,117 @@ It is explicitly intended that the existing Go command-line tools located in the
 *   **Use Cases:** Useful for quick checks, debugging data issues directly, and comparing results with the new background service during development and operation.
 *   **Build Process:** These tools are now built as part of the unified CMake build process defined in `log_data/CMakeLists.txt` and the root `CMakeLists.txt`.
 *   **Installation:** They are installed alongside the other project executables into `/home/pi/MWPLog/bin` via `make install`.
-*   **Maintenance Note:** If future changes are made to the InfluxDB schema or core aggregation logic within the `mwp_data_service`, corresponding manual updates may be required for `logit` and `logitdebug` if they need to reflect those changes. 
+*   **Maintenance Note:** If future changes are made to the InfluxDB schema or core aggregation logic within the `mwp_data_service`, corresponding manual updates may be required for `logit` and `logitdebug` if they need to reflect those changes.
+
+## 8. Development Progress & Current Status (as of 2024-07-29)
+
+Significant progress has been made to transition `mwp_data_service` from a single-execution tool to a continuously running, MQTT-driven service. The core functionality for dynamic data aggregation based on external requests is now largely in place.
+
+**Key Accomplishments Since Last Update:**
+
+*   **Flexible Time Ranges for Queries:**
+    *   The service now accepts a flexible time range string via a command-line flag (`-range` / `-r`) for its *initial* data load. This replaced the previously hardcoded range.
+    *   Supported formats include relative durations (e.g., "24h", "7d"), specific month names (e.g., "June", defaulting to the current year), and specific years (e.g., "2023", "2024").
+    *   The `aggregation.QueryAggregatedData` function in `internal/aggregation/aggregator.go` was enhanced to parse these various formats and construct the correct Flux query time parameters (UTC-based for months/years, relative for durations).
+    *   Help text for the command-line flag was updated to reflect these new capabilities.
+*   **Controller 0 / Zone 0 Handling:**
+    *   Modified `InitializeTable` in `internal/datastore/store.go` to specifically include `Zone 0` when `ControllerID` is "0", overriding the general `zone_start_index` from the configuration for this specific controller. This ensures data for C0Z0 is correctly processed and included in reports.
+*   **Super Summaries Implementation:**
+    *   The service now calculates and includes "Super Summaries" in its output:
+        *   **Total Irrigation Gallons:** Sum of `TotalFlow` for Controllers 0, 1, and 2.
+        *   **Total Well 3 Gallons:** `TotalFlow` for Controller 3, Zone 1.
+    *   These summaries are calculated in `cmd/mwp_data_service/main.go` after aggregated records are fetched.
+    *   `internal/service/file_writer.go` was updated:
+        *   `WriteDataTableToJSON` now uses a new `ReportData` struct that encapsulates the super summaries and the main `WaterDataTable` details, which is then marshaled to JSON.
+        *   `WriteDataTableAsTextReport` now prepends the text report with these super summary values.
+        *   Initial calls to these write functions (for `watertable_initial.json/txt`) were updated to pass zero values for summaries before any data is queried.
+*   **Transition to Continuous MQTT-Driven Service (Stage 1 - Core MQTT):**
+    *   **MQTT Integration:**
+        *   Added `github.com/eclipse/paho.mqtt.golang` as a dependency.
+        *   `cmd/mwp_data_service/main.go` now initializes an MQTT client, connecting to the broker defined in `config.yaml` (respecting development/production environments).
+        *   The service subscribes to a `range_request` topic (e.g., `mwp/json/log/dataservice/range_request`).
+        *   The service publishes the full `ReportData` (including super summaries and the `WaterDataTable`) as a JSON payload to a `watertable_update` topic (e.g., `mwp/json/log/dataservice/watertable_update`).
+    *   **Application Lifecycle:**
+        *   The `main` function was refactored to run continuously, listening for OS interrupt signals (SIGINT, SIGTERM) for graceful shutdown.
+        *   On startup, it performs an initial data load based on the `-range` command-line flag (cannot be "now") and publishes this initial state.
+        *   A `processAndPublishData(timeRange string)` function was introduced to encapsulate querying, data processing, summary calculation, MQTT publishing, and local file writing (`watertable_latest.json`, `watertable_latest_report.txt`).
+        *   An MQTT message handler (`mqttMessageHandler`) receives new range requests. For non-"now" requests, it triggers `processAndPublishData` with the new range.
+    *   **Configuration Update:** Users are reminded to update `config.yaml` with the new `request_topic` and `response_topic` names.
+*   **"Now" Mode Functionality (Stage 2 - Dynamic Updates):**
+    *   **State Management:** Introduced global variables (`isInNowMode`, `nowModeTicker`, `nowModeTimeoutTimer`, `lastNonNowRange`, `nowModeControlChan`, `shutdownChan`) to manage the "now" mode state.
+    *   **`nowModeManager` Goroutine:**
+        *   A dedicated goroutine now manages the lifecycle of "now" mode.
+        *   It listens on `nowModeControlChan` for incoming range requests from the MQTT handler.
+        *   **Entering "Now" Mode:** If `{"range": "now"}` is received:
+            *   Any existing "now" mode is stopped (ticker/timer reset).
+            *   A 1-second ticker (`NowModeUpdateInterval`) and a 60-second timeout timer (`NowModeDuration`) are started.
+            *   `processAndPublishData("-1m")` is called immediately and then on each subsequent tick.
+        *   **Exiting/Interrupting "Now" Mode:**
+            *   If a non-"now" range is received via MQTT: "now" mode is stopped, `lastNonNowRange` is updated, and `processAndPublishData` is called with the new range.
+            *   If another `{"range": "now"}` is received: The current "now" mode is reset (timers restarted).
+            *   **Timeout:** If the 60-second `nowModeTimeoutTimer` expires: "now" mode stops, and `processAndPublishData` is called with `lastNonNowRange` (defaulting to `DefaultRangeAfterNow` like "1h", or the actual last non-"now" range provided).
+        *   **Shutdown:** Responds to `shutdownChan` for graceful cleanup.
+    *   **MQTT Handler Update:** The `mqttMessageHandler` now simply forwards the `payload.Range` to the `nowModeControlChan`, centralizing the logic in `nowModeManager`.
+    *   **Initial Range Constraint:** The `-range` command-line flag explicitly disallows "now" on startup.
+
+**Current Operational Mode:**
+
+The application now runs as a continuous service. It performs an initial data load based on a command-line specified time range. It then listens for MQTT messages on `mwp/json/log/dataservice/range_request`. It can process specific time range requests or enter a "now" mode, which provides 1-second updates for 60 seconds before reverting to a default/previous range. All data table updates, including super summaries, are published as JSON to `mwp/json/log/dataservice/watertable_update` and also written to local `watertable_latest.json` and `watertable_latest_report.txt` files.
+
+**Outstanding Items from Previous "Next Steps" (and their current status):**
+
+*   **MQTT Integration:** Largely complete. Client setup, subscription, message handling, and publishing are implemented.
+*   **Service Logic & Main Loop:** Implemented. `main.go` now supports continuous operation and graceful shutdown. The `nowModeManager` goroutine handles the dynamic request processing flow.
+*   **Logging:** Still primarily uses `fmt.Printf` and `fmt.Fprintf`. Transition to a formal logging solution is pending.
+*   **Error Handling and Resilience:** Basic error handling is in place for MQTT, InfluxDB. More advanced retry mechanisms are not yet implemented.
+*   **Configuration Security (InfluxDB Token):** Placeholder token issue still exists. Best practice is to use environment variables.
+*   **Refinement & Testing:** Core functionality tested through described scenarios. Comprehensive unit testing is an area for future improvement.
+*   **Deployment & Operation:** Scripts (`start_mwp_service.sh`, etc.) would need review/updates for the new continuous operational mode.
+*   **Build System:** Assumed to be functional; CMake and Go build processes handle the application build.
+
+## 9. Next Steps / Open Questions
+
+The immediate focus is to transition the application from a one-off execution tool to a continuously running service that responds to MQTT requests.
+
+*   **MQTT Integration (High Priority):**
+    *   Implement MQTT client setup in `internal/mqtt/client.go` (connect, handle Paho library).
+    *   Subscribe to the `request_topic` defined in `config.yaml`.
+    *   Implement a message callback (`onMessageReceived`) to:
+        *   Parse the incoming MQTT message payload (expected to be a time range string like "24h", "7d", or a simple JSON like `{"range": "24h"}`).
+        *   Validate the requested time range against a predefined set of allowed values or formats.
+        *   If valid, trigger the data aggregation process (passing the time range).
+    *   Implement a function `PublishResults(client MQTTClient, topic string, dataTable datastore.WaterDataTable)` to:
+        *   Convert the `WaterDataTable` into the required JSON array format (iterating through all C/Z, creating objects with C, Z, and `ZoneData` fields).
+        *   Publish the JSON string to the `response_topic`.
+*   **Service Logic & Main Loop (High Priority):**
+    *   Refactor `cmd/mwp_data_service/main.go` to:
+        *   Initialize components (config, data table, InfluxDB client, MQTT client).
+        *   Start the MQTT client and its listeners.
+        *   Enter a main service loop that waits for shutdown signals (or relies on MQTT Paho library's internal looping).
+    *   Develop `internal/service/service.go` to orchestrate the flow:
+        *   On receiving an MQTT request (via a channel or callback from `internal/mqtt`):
+            1.  Call `datastore.ResetUpdateStatus(waterDataTable)`.
+            2.  Call `aggregation.QueryAggregatedData(influxClient, requestedTimeRange, cfg.InfluxDB)`.
+            3.  Loop through query results, calculate GPM, and call `datastore.UpdateEntry(...)`.
+            4.  Call `mqtt.PublishResults(...)`.
+    *   Implement OS signal handling (SIGINT, SIGTERM) in `main.go` or `internal/service` for graceful shutdown:
+        *   Disconnect the MQTT client.
+        *   Close the InfluxDB client.
+*   **Logging:**
+    *   Replace `fmt.Printf` and `fmt.Fprintf` with a proper logging solution (e.g., standard `log` package configured for levels and file output based on `cfg.Logging`).
+*   **Error Handling and Resilience:**
+    *   Review and enhance error handling for InfluxDB queries, MQTT operations, file I/O, etc.
+    *   Consider adding retry mechanisms for temporary InfluxDB or MQTT connection issues if the service is intended to be long-running without manual restarts for minor glitches.
+*   **Configuration Security:**
+    *   The `YOUR_INFLUXDB_TOKEN_HERE` placeholder in `config.yaml` must be addressed. For production, using environment variables to supply the token to the application is strongly recommended over hardcoding it. The application can be modified to read this from an environment variable at startup.
+*   **Refinement & Testing:**
+    *   Thoroughly test the InfluxDB Flux query with various data scenarios.
+    *   Test the MQTT request/response cycle.
+    *   Consider adding unit tests for critical functions (e.g., GPM calculation, time range validation).
+*   **Deployment & Operation:**
+    *   Update/finalize `start_mwp_service.sh` and `stop_mwp_service.sh` scripts to manage the service.
+    *   Configure `cron` jobs or a systemd service for robust, persistent operation and auto-restarts if necessary.
+*   **Build System:**
+    *   Ensure `mwp_data_service/CMakeLists.txt` correctly handles the Go build process, dependencies, and installs the final executable to the `bin/` directory as part of the main project's `make install` target.
+
+## 10. Status of Existing `log_data` Tools (`logit`, `

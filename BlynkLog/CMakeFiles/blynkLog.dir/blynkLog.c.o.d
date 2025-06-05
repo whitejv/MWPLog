@@ -85,7 +85,4 @@ BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o: \
  /usr/local/include/MQTTExportDeclarations.h \
  /usr/local/include/MQTTProperties.h /usr/local/include/MQTTReasonCodes.h \
  /usr/local/include/MQTTSubscribeOpts.h \
- /usr/local/include/MQTTClientPersistence.h \
- /home/pi/MWPCore/include/water.h /home/pi/MWPCore/include/alert.h \
- /usr/lib/gcc/aarch64-linux-gnu/12/include/stdbool.h \
- /home/pi/MWPCore/mylib/msgarrvd.c
+ /usr/local/include/MQTTClientPersistence.h

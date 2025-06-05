@@ -98,3 +98,4 @@ func UpdateEntry(table WaterDataTable, controllerID, zoneID string,
 		UpdatedInLastQuery: true,
 	}
 }
+ 

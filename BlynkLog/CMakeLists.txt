@@ -3,7 +3,7 @@ project(blynkLog_sub LANGUAGES C)
 
 message(STATUS "Configuring BlynkLog build...")
 
-add_executable(blynkLog blynkLog.c)
+add_executable(blynkLog blynkLog.c) 
 message(STATUS "  + Added executable: blynkLog from blynkLog.c")
 
 find_package(PkgConfig REQUIRED)
