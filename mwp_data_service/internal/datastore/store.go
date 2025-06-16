@@ -61,6 +61,13 @@ func InitializeTable(cfg config.ControllerConfig) WaterDataTable {
 func ResetUpdateStatus(table WaterDataTable) {
 	for _, zones := range table {
 		for zoneID, data := range zones {
+			// Zero out all data values
+			data.TotalFlow = 0.0
+			data.TotalSeconds = 0.0
+			data.AvgPSI = 0.0
+			data.AvgTempF = 0.0
+			data.AvgAmps = 0.0
+			data.GPM = 0.0
 			data.UpdatedInLastQuery = false
 			zones[zoneID] = data // Important: update the map with the modified struct
 		}
@@ -98,4 +105,3 @@ func UpdateEntry(table WaterDataTable, controllerID, zoneID string,
 		UpdatedInLastQuery: true,
 	}
 }
- 

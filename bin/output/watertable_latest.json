@@ -1,15 +1,15 @@
 {
-  "totalIrrigationGallons": 1542.4914898723364,
-  "totalWell3Gallons": 2099.2928607165813,
+  "totalIrrigationGallons": 5993.6664536250755,
+  "totalWell3Gallons": 5088.584192335606,
   "details": {
     "0": {
       "0": {
-        "totalFlow": 288.99536252208054,
-        "totalSeconds": 1859.3786484003067,
-        "avgPSI": 44.780022423904775,
-        "avgTempF": 76.04318044415207,
-        "avgAmps": 1.4786207748545939,
-        "gpm": 9.325546341108545,
+        "totalFlow": 716.531338961795,
+        "totalSeconds": 3671.784504532814,
+        "avgPSI": 45.515507579466785,
+        "avgTempF": 75.89446200352863,
+        "avgAmps": 1.475470455107666,
+        "gpm": 11.708715553604595,
         "updatedInLastQuery": true
       },
       "1": {
@@ -19,7 +19,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "2": {
         "totalFlow": 0,
@@ -28,7 +28,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "3": {
         "totalFlow": 0,
@@ -37,7 +37,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "4": {
         "totalFlow": 0,
@@ -46,18 +46,18 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       }
     },
     "1": {
       "1": {
-        "totalFlow": 103.74034570157528,
-        "totalSeconds": 834.1837706565857,
-        "avgPSI": 43.401270635408174,
-        "avgTempF": 73.7762120473299,
-        "avgAmps": 1.493284186727995,
-        "gpm": 7.461690050856872,
-        "updatedInLastQuery": false
+        "totalFlow": 40.532790675759315,
+        "totalSeconds": 280.0587844848633,
+        "avgPSI": 46.84336566925049,
+        "avgTempF": 78.55651730128697,
+        "avgAmps": 1.410685728277479,
+        "gpm": 8.68377489039985,
+        "updatedInLastQuery": true
       },
       "10": {
         "totalFlow": 202.57589481398463,
@@ -69,40 +69,40 @@
         "updatedInLastQuery": true
       },
       "11": {
-        "totalFlow": 354.8270186185837,
-        "totalSeconds": 1059.2537705898285,
-        "avgPSI": 47.064952709406924,
-        "avgTempF": 73.2936607555357,
-        "avgAmps": 1.5344107767902984,
-        "gpm": 20.098697505943488,
-        "updatedInLastQuery": false
+        "totalFlow": 619.5450070500374,
+        "totalSeconds": 2119.4761060476303,
+        "avgPSI": 45.93593282101007,
+        "avgTempF": 73.58629496179701,
+        "avgAmps": 1.5306356941657902,
+        "gpm": 17.53862679410969,
+        "updatedInLastQuery": true
       },
       "12": {
-        "totalFlow": 203.22751691937447,
-        "totalSeconds": 1060.28440117836,
-        "avgPSI": 46.03914115833786,
-        "avgTempF": 73.05464508488492,
-        "avgAmps": 1.430317945637793,
-        "gpm": 11.500358773184727,
-        "updatedInLastQuery": false
+        "totalFlow": 364.42527528107166,
+        "totalSeconds": 2119.473894715309,
+        "avgPSI": 46.33828802500316,
+        "avgTempF": 73.9166282088535,
+        "avgAmps": 1.41774140072634,
+        "gpm": 10.316483053357592,
+        "updatedInLastQuery": true
       },
       "13": {
-        "totalFlow": 550.4639972001314,
-        "totalSeconds": 2803.6424275636673,
-        "avgPSI": 45.574073407040125,
-        "avgTempF": 73.58679044616677,
-        "avgAmps": 1.4270463975633505,
-        "gpm": 11.780332437296112,
-        "updatedInLastQuery": false
+        "totalFlow": 481.5503351688385,
+        "totalSeconds": 2706.599084854126,
+        "avgPSI": 46.401394922999394,
+        "avgTempF": 75.08097204982309,
+        "avgAmps": 1.4198193032478987,
+        "gpm": 10.675027665461403,
+        "updatedInLastQuery": true
       },
       "14": {
-        "totalFlow": 694.6226641237736,
-        "totalSeconds": 2797.6540117263794,
-        "avgPSI": 47.13492355510342,
-        "avgTempF": 73.77478372398598,
-        "avgAmps": 1.4475563226276353,
-        "gpm": 14.897253081594641,
-        "updatedInLastQuery": false
+        "totalFlow": 604.2318046092987,
+        "totalSeconds": 2695.624276638031,
+        "avgPSI": 47.01875168441178,
+        "avgTempF": 74.85611107424593,
+        "avgAmps": 1.4457851684159826,
+        "gpm": 13.449169675001448,
+        "updatedInLastQuery": true
       },
       "15": {
         "totalFlow": 0,
@@ -111,16 +111,16 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "16": {
-        "totalFlow": 545.8145575523376,
-        "totalSeconds": 1737.3717756271362,
-        "avgPSI": 45.903214673715965,
-        "avgTempF": 74.82221455154024,
-        "avgAmps": 1.4960172766574031,
-        "gpm": 18.849663562261423,
-        "updatedInLastQuery": false
+        "totalFlow": 163.09979313611984,
+        "totalSeconds": 579.1145174503326,
+        "avgPSI": 46.46611129681681,
+        "avgTempF": 79.84358842549958,
+        "avgAmps": 1.502259079862341,
+        "gpm": 16.89819076070128,
+        "updatedInLastQuery": true
       },
       "17": {
         "totalFlow": 0,
@@ -129,7 +129,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "18": {
         "totalFlow": 0,
@@ -138,7 +138,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "19": {
         "totalFlow": 0,
@@ -147,16 +147,16 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "2": {
-        "totalFlow": 142.3094566464424,
-        "totalSeconds": 880.2065818309784,
-        "avgPSI": 45.92781287106601,
-        "avgTempF": 73.20644889311357,
-        "avgAmps": 1.4536909279498187,
-        "gpm": 9.700640253137943,
-        "updatedInLastQuery": false
+        "totalFlow": 272.1764134541154,
+        "totalSeconds": 1758.4048631191254,
+        "avgPSI": 46.97049960504213,
+        "avgTempF": 73.28308359347919,
+        "avgAmps": 1.427501717999798,
+        "gpm": 9.287158577507066,
+        "updatedInLastQuery": true
       },
       "20": {
         "totalFlow": 0,
@@ -165,7 +165,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "21": {
         "totalFlow": 0,
@@ -174,7 +174,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "22": {
         "totalFlow": 0,
@@ -183,7 +183,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "23": {
         "totalFlow": 0,
@@ -192,7 +192,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "24": {
         "totalFlow": 0,
@@ -201,7 +201,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "25": {
         "totalFlow": 0,
@@ -210,7 +210,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "26": {
         "totalFlow": 0,
@@ -219,7 +219,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "27": {
         "totalFlow": 0,
@@ -228,7 +228,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "28": {
         "totalFlow": 0,
@@ -237,7 +237,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "29": {
         "totalFlow": 0,
@@ -246,16 +246,16 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "3": {
-        "totalFlow": 174.43277204036713,
-        "totalSeconds": 1059.2295761108398,
-        "avgPSI": 46.159950922748976,
-        "avgTempF": 68.4556279168926,
-        "avgAmps": 1.4533229605897178,
-        "gpm": 9.880734600377933,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "30": {
         "totalFlow": 0,
@@ -264,7 +264,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "31": {
         "totalFlow": 0,
@@ -273,7 +273,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "32": {
         "totalFlow": 0,
@@ -282,43 +282,43 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "4": {
-        "totalFlow": 197.4861803650856,
-        "totalSeconds": 880.1902195215225,
-        "avgPSI": 48.554320452430034,
-        "avgTempF": 68.3908090504733,
-        "avgAmps": 1.4466545508666473,
-        "gpm": 13.462056904411442,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "5": {
-        "totalFlow": 204.02884343266487,
-        "totalSeconds": 1479.3124556541443,
-        "avgPSI": 45.862240606260265,
-        "avgTempF": 68.26850802387395,
-        "avgAmps": 1.4039330818590239,
-        "gpm": 8.275283939623602,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "6": {
-        "totalFlow": 210.65075606107712,
-        "totalSeconds": 1477.322103023529,
-        "avgPSI": 45.667318224019105,
-        "avgTempF": 68.35158962903188,
-        "avgAmps": 1.403719719955868,
-        "gpm": 8.55537552561977,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "7": {
-        "totalFlow": 187.069003790617,
-        "totalSeconds": 1300.251245379448,
-        "avgPSI": 46.0842673433744,
-        "avgTempF": 68.22690238952637,
-        "avgAmps": 1.428175401045726,
-        "gpm": 8.632285696570525,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "8": {
         "totalFlow": 329.2992000281811,
@@ -341,31 +341,31 @@
     },
     "2": {
       "1": {
-        "totalFlow": 10.610908782109618,
-        "totalSeconds": 49.010112166404724,
-        "avgPSI": 42.860428557103994,
-        "avgTempF": 0,
-        "avgAmps": 1.6211020532919436,
-        "gpm": 12.990268717707378,
+        "totalFlow": 476.60151458345354,
+        "totalSeconds": 2985.7051726579666,
+        "avgPSI": 46.32491254119618,
+        "avgTempF": 73.42137527338025,
+        "avgAmps": 1.413841219443572,
+        "gpm": 9.577667325253715,
         "updatedInLastQuery": true
       },
       "10": {
-        "totalFlow": 232.4361383318901,
-        "totalSeconds": 760.152400135994,
-        "avgPSI": 46.85276159989206,
-        "avgTempF": 67.58241698616429,
-        "avgAmps": 1.5135079085826875,
-        "gpm": 18.346542479400693,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "11": {
-        "totalFlow": 208.9864721596241,
-        "totalSeconds": 877.1758524179459,
-        "avgPSI": 47.274733283500716,
-        "avgTempF": 67.63389189838684,
-        "avgAmps": 1.45645384138775,
-        "gpm": 14.294953851058509,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "12": {
         "totalFlow": 0,
@@ -374,16 +374,16 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "13": {
-        "totalFlow": 189.8604243695736,
-        "totalSeconds": 820.1670212745667,
-        "avgPSI": 47.06181070746445,
-        "avgTempF": 67.95486061282274,
-        "avgAmps": 1.4521573310945093,
-        "gpm": 13.889397118737417,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "14": {
         "totalFlow": 0,
@@ -392,7 +392,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "15": {
         "totalFlow": 0,
@@ -401,7 +401,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "16": {
         "totalFlow": 0,
@@ -410,7 +410,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "17": {
         "totalFlow": 0,
@@ -419,7 +419,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "18": {
         "totalFlow": 0,
@@ -428,7 +428,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "19": {
         "totalFlow": 0,
@@ -437,15 +437,15 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "2": {
-        "totalFlow": 1.1711625158786774,
-        "totalSeconds": 4.0009273290634155,
-        "avgPSI": 47.02187728881836,
-        "avgTempF": 0,
-        "avgAmps": 1.4752500355243683,
-        "gpm": 17.563365983248243,
+        "totalFlow": 190.6441332399845,
+        "totalSeconds": 822.1938205957413,
+        "avgPSI": 47.32956820856916,
+        "avgTempF": 73.1264434313252,
+        "avgAmps": 1.4565803089571114,
+        "gpm": 13.912349749978551,
         "updatedInLastQuery": true
       },
       "20": {
@@ -455,7 +455,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "21": {
         "totalFlow": 0,
@@ -464,7 +464,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "22": {
         "totalFlow": 0,
@@ -473,7 +473,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "23": {
         "totalFlow": 0,
@@ -482,7 +482,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "24": {
         "totalFlow": 0,
@@ -491,7 +491,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "25": {
         "totalFlow": 0,
@@ -500,7 +500,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "26": {
         "totalFlow": 0,
@@ -509,7 +509,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "27": {
         "totalFlow": 0,
@@ -518,7 +518,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "28": {
         "totalFlow": 0,
@@ -527,7 +527,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "29": {
         "totalFlow": 0,
@@ -536,16 +536,16 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "3": {
-        "totalFlow": 219.62379977107048,
-        "totalSeconds": 819.1932688951492,
-        "avgPSI": 46.50876876810095,
-        "avgTempF": 71.83172797458076,
-        "avgAmps": 1.480432250706413,
-        "gpm": 16.085859694668514,
-        "updatedInLastQuery": false
+        "totalFlow": 393.8364229500294,
+        "totalSeconds": 1638.3727159500122,
+        "avgPSI": 46.48976413321582,
+        "avgTempF": 73.04725076864054,
+        "avgAmps": 1.4560036786601074,
+        "gpm": 14.422960750600495,
+        "updatedInLastQuery": true
       },
       "30": {
         "totalFlow": 0,
@@ -554,7 +554,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "31": {
         "totalFlow": 0,
@@ -563,7 +563,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "32": {
         "totalFlow": 0,
@@ -572,15 +572,15 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "4": {
-        "totalFlow": 0.13208600878715515,
-        "totalSeconds": 1.0001956224441528,
-        "avgPSI": 30.80781364440918,
-        "avgTempF": 0,
-        "avgAmps": 1.5420000553131104,
-        "gpm": 7.9236104911785095,
+        "totalFlow": 428.9096544710919,
+        "totalSeconds": 1760.4451718330383,
+        "avgPSI": 44.75879050059752,
+        "avgTempF": 72.85933012962342,
+        "avgAmps": 1.4628494518724355,
+        "gpm": 14.618222526901961,
         "updatedInLastQuery": true
       },
       "5": {
@@ -611,40 +611,40 @@
         "updatedInLastQuery": true
       },
       "8": {
-        "totalFlow": 200.77952873706818,
-        "totalSeconds": 699.1509124040604,
-        "avgPSI": 46.37701914272936,
-        "avgTempF": 67.2144292195638,
-        "avgAmps": 1.4859957217487996,
-        "gpm": 17.230574273014607,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       },
       "9": {
-        "totalFlow": 196.23576933145523,
-        "totalSeconds": 758.1563701629639,
-        "avgPSI": 47.249484980641064,
-        "avgTempF": 67.04968533478186,
-        "avgAmps": 1.5064749418902839,
-        "gpm": 15.529970627769691,
-        "updatedInLastQuery": false
+        "totalFlow": 0,
+        "totalSeconds": 0,
+        "avgPSI": 0,
+        "avgTempF": 0,
+        "avgAmps": 0,
+        "gpm": 0,
+        "updatedInLastQuery": true
       }
     },
     "3": {
       "1": {
-        "totalFlow": 2099.2928607165813,
-        "totalSeconds": 12681.064699053764,
-        "avgPSI": 4.135794828735065,
-        "avgTempF": 63.37494186302675,
-        "avgAmps": 1.5564074921276991,
-        "gpm": 9.932728412969423,
+        "totalFlow": 5088.584192335606,
+        "totalSeconds": 30713.047523260117,
+        "avgPSI": 4.136252020557703,
+        "avgTempF": 58.77869116179929,
+        "avgAmps": 100933563817228900,
+        "gpm": 9.940890799224988,
         "updatedInLastQuery": true
       },
       "2": {
         "totalFlow": 0,
-        "totalSeconds": 2631.5936295986176,
-        "avgPSI": 84.0759173907603,
-        "avgTempF": 76.61071185782943,
-        "avgAmps": 1.1168871193094847,
+        "totalSeconds": 5744.294659614563,
+        "avgPSI": 83.77266139195768,
+        "avgTempF": 77.61360412363845,
+        "avgAmps": 3.400332893806601e+25,
         "gpm": 0,
         "updatedInLastQuery": true
       },
@@ -655,7 +655,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "4": {
         "totalFlow": 0,
@@ -664,7 +664,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "5": {
         "totalFlow": 0,
@@ -673,7 +673,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       }
     },
     "4": {
@@ -684,7 +684,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "2": {
         "totalFlow": 0,
@@ -693,7 +693,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "3": {
         "totalFlow": 0,
@@ -702,7 +702,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "4": {
         "totalFlow": 0,
@@ -711,7 +711,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "5": {
         "totalFlow": 0,
@@ -720,7 +720,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       }
     },
     "5": {
@@ -731,7 +731,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "2": {
         "totalFlow": 0,
@@ -740,7 +740,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "3": {
         "totalFlow": 0,
@@ -749,7 +749,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "4": {
         "totalFlow": 0,
@@ -758,7 +758,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       },
       "5": {
         "totalFlow": 0,
@@ -767,7 +767,7 @@
         "avgTempF": 0,
         "avgAmps": 0,
         "gpm": 0,
-        "updatedInLastQuery": false
+        "updatedInLastQuery": true
       }
     }
   }

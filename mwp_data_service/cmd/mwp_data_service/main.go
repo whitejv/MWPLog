@@ -77,11 +77,14 @@ func processAndPublishData(timeRange string) {
 
 	fmt.Printf("Query for range '%s' returned %d records.\n", timeRange, len(aggregatedRecords))
 
-	// Reset update status before processing new data
+	// Reset update status and zero out all data before processing new data
 	datastore.ResetUpdateStatus(waterDataTable)
 	if verboseMode {
-		fmt.Println("WaterDataTable update status reset.")
+		fmt.Println("WaterDataTable update status reset and all data zeroed.")
 	}
+
+	// Create a map to track which entries we've updated
+	updatedEntries := make(map[string]bool)
 
 	var totalIrrigationGallons float64
 	var totalWell3Gallons float64
@@ -91,6 +94,10 @@ func processAndPublishData(timeRange string) {
 			fmt.Println("Processing aggregated records...")
 		}
 		for _, record := range aggregatedRecords {
+			// Create a unique key for this controller/zone combination
+			entryKey := fmt.Sprintf("%s:%s", record.Controller, record.Zone)
+			updatedEntries[entryKey] = true
+
 			if record.Controller == "0" || record.Controller == "1" || record.Controller == "2" {
 				totalIrrigationGallons += record.TotalFlow
 			}
@@ -110,6 +117,17 @@ func processAndPublishData(timeRange string) {
 		}
 	} else {
 		fmt.Printf("No records returned from query for range '%s', watertable not updated further for this cycle.\n", timeRange)
+	}
+
+	// Ensure all entries that weren't updated in this query are zeroed out
+	for controller, zones := range waterDataTable {
+		for zone := range zones {
+			entryKey := fmt.Sprintf("%s:%s", controller, zone)
+			if !updatedEntries[entryKey] {
+				// This entry wasn't updated in the current query, ensure it's zeroed
+				datastore.UpdateEntry(waterDataTable, controller, zone, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+			}
+		}
 	}
 
 	if verboseMode {
