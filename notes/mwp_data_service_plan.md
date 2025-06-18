@@ -19,7 +19,8 @@ The system consists of several key components:
     *   It publishes these request messages to the `mwp_data_service`'s request topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_request`).
     *   It subscribes to the `mwp_data_service`'s response topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_results`).
     *   It receives the full JSON watertable results from the `mwp_data_service`.
-    *   **(Future Work)** It will parse this JSON and update up to 155 specific Blynk datastreams via the Blynk Platform, corresponding to 31 predefined Controller/Zone rows of data.
+    *   It parses this JSON and updates its internal `blynk_display_table`.
+    *   It then publishes data from this table to the Blynk Platform in batches using the `batch_ds` datastream feature.
 5.  **MWP Data Aggregation Service (This Go App):** The core component detailed in this plan. It connects *only* to the local MQTT Broker and InfluxDB.
     *   Subscribes to the request topic on the local MQTT Broker (e.g., `mwp/json/data/log/dataservice/query_request`) to receive time window selection.
     *   Processes requests received from the `BlynkLog` app.
@@ -150,6 +151,8 @@ MWPLog/
 *   `AggregatedRecord` struct defined to hold raw query results before GPM calculation.
 *   `QueryAggregatedData(client influxdb2.Client, timeRange string, dbConfig config.InfluxDBConfig)`:
     *   Constructs and executes a Flux query to fetch `sum(intervalFlow)`, `sum(secondsOn)`, `mean(pressurePSI)`, `mean(temperatureF)`, `mean(amperage)` grouped by Controller and Zone.
+    *   **Timezone Correction:** For relative time ranges (e.g., "-24h"), the service first calculates absolute start and stop timestamps localized to "America/Chicago". These absolute timestamps are then injected into the Flux query's `range()` function to ensure queries correctly reflect the user's local time perspective, avoiding UTC-based discrepancies.
+    *   The `gallonsTank` field is intentionally excluded from this query and the resulting data model.
     *   Filters out records with missing/empty Controller or Zone tags.
     *   Pivots results and maps them to `AggregatedRecord` structs.
     *   Handles query errors and result parsing.
@@ -199,6 +202,7 @@ The system has progressed significantly, with both `mwp_data_service` and `blynk
     *   Implemented with a `nowModeManager` goroutine, allowing frequent updates (e.g., every 1 second for `"-1m"` data) for a configurable duration (e.g., 60 seconds), after which it reverts to the last specified or default range.
     *   Activated by an MQTT request with `{"range": "now"}`.
 *   **Operational Mode:** Runs as a continuous service, performing an initial data load and then responding to MQTT requests for different time windows or operating in "now" mode. Handles OS signals for graceful shutdown.
+*   **Startup:** The service is launched via the `log.sh` script, which provides the necessary command-line flags (eg., `-P` for production) and the path to the configuration file (`mwp_data_service/config/config.yaml`).
 
 **`BlynkLog.c` Implemented Features (relevant to `mwp_data_service` interaction):**
 
@@ -214,6 +218,7 @@ The system has progressed significantly, with both `mwp_data_service` and `blynk
         *   Navigates the JSON structure (specifically `parsed_json.details.controller_key.zone_key`).
         *   Populates an internal C array (`static BlynkDataRow blynk_display_table[31]`) with data for 31 predefined Controller/Zone combinations defined in `json_to_blynk_map`.
         *   Each entry in `blynk_display_table` stores: `zone_number`, `total_flow`, `total_minutes` (calculated), `avg_psi`, `gpm`, and a `data_valid` flag.
+*   **Publishing to Blynk:** After populating its internal table, `BlynkLog.c` sends the data to the Blynk Platform. It constructs JSON payloads for the `batch_ds` datastream, allowing it to update multiple widget values in a single, efficient MQTT message. This avoids the overhead of publishing to 155 individual datastreams.
 *   **Error Handling:** Basic JSON parsing error checks are in place.
 *   **MQTT Client Management:** Separate MQTT clients for Blynk cloud (`blynkClient`) and local broker (`client`) are managed, including connection, callbacks, and subscription logic.
 
@@ -225,23 +230,15 @@ The system has progressed significantly, with both `mwp_data_service` and `blynk
     3.  `mwp_data_service` receives the request, queries InfluxDB using the specified time window.
     4.  `mwp_data_service` generates `watertable_latest_report.txt` (including the time window header) and `watertable_latest.json`.
     5.  `mwp_data_service` publishes the full watertable JSON data to another MQTT topic.
-    6.  `BlynkLog.c` receives this JSON, parses it, and populates its internal `blynk_display_table` with the 31 specified rows of data.
+    6.  `BlynkLog.c` receives this JSON, parses it, populates its internal `blynk_display_table`, and publishes the data in batches to the Blynk Platform.
 *   Both applications are in a stable state regarding this interaction.
 
 ## 6. Next Steps / Open Questions
 
 **For `BlynkLog.c` (High Priority):**
 
-*   **Publish Table Data to Blynk Datastreams:**
-    *   **Define Datastream Aliases:** Finalize the exact naming convention for the 155 Blynk datastream aliases that will be created in the Blynk console (e.g., pattern `C{controller_idx}Z{zone_idx}_{metric_suffix}` like `C0Z0_zone`, `C0Z0_flow`, etc.).
-    *   **Define Blynk Publishing Base Topic:** Specify the MQTT topic prefix for publishing to these datastreams (e.g., `"ds"` or an equivalent to the `BLYNK_DS` macro used in prior examples).
-    *   **Implement Publishing Logic:**
-        *   Create a new function or modify the main loop/`msgarrvd` to iterate through the `blynk_display_table` (31 rows) after it has been populated.
-        *   For each row where `data_valid` is true:
-            *   Format each of the 5 data values (zone number, total flow, total minutes, avg psi, gpm) as a string.
-            *   Construct the full MQTT topic for each of the 5 corresponding Blynk datastream aliases for that row.
-            *   Publish these 5 values to their respective datastreams using the `blynkClient`.
-    *   **Handling Invalid Data:** Decide how to represent rows in Blynk if `data_valid` is false for an entry in `blynk_display_table` (e.g., send "0", a specific placeholder like "N/A", or skip updating those datastreams).
+*   **Review Publishing Logic:** The `batch_ds` implementation is a significant improvement. The next step is to monitor its performance and reliability and ensure all desired data points are being correctly displayed in the Blynk App.
+*   **Handling Invalid Data:** Decide how to represent rows in Blynk if `data_valid` is false for an entry in `blynk_display_table` (e.g., send "0", a specific placeholder like "N/A", or skip updating those datastreams). The current implementation appears to skip invalid rows, which is a reasonable default.
 
 **For `mwp_data_service` (Lower Priority / Refinements):**
 
