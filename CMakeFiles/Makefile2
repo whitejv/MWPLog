@@ -134,7 +134,7 @@ mwp_data_service/clean: mwp_data_service/CMakeFiles/mwp_data_service_build.dir/c
 mwp_data_service/CMakeFiles/mwp_data_service_build.dir/all:
 	$(MAKE) $(MAKESILENT) -f mwp_data_service/CMakeFiles/mwp_data_service_build.dir/build.make mwp_data_service/CMakeFiles/mwp_data_service_build.dir/depend
 	$(MAKE) $(MAKESILENT) -f mwp_data_service/CMakeFiles/mwp_data_service_build.dir/build.make mwp_data_service/CMakeFiles/mwp_data_service_build.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=7,8 "Built target mwp_data_service_build"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=8,9 "Built target mwp_data_service_build"
 .PHONY : mwp_data_service/CMakeFiles/mwp_data_service_build.dir/all
 
 # Build rule for subdir invocation for target.
@@ -160,7 +160,7 @@ mwp_data_service/CMakeFiles/mwp_data_service_build.dir/clean:
 log_data/CMakeFiles/logit_build.dir/all:
 	$(MAKE) $(MAKESILENT) -f log_data/CMakeFiles/logit_build.dir/build.make log_data/CMakeFiles/logit_build.dir/depend
 	$(MAKE) $(MAKESILENT) -f log_data/CMakeFiles/logit_build.dir/build.make log_data/CMakeFiles/logit_build.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=3,4 "Built target logit_build"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=4,5 "Built target logit_build"
 .PHONY : log_data/CMakeFiles/logit_build.dir/all
 
 # Build rule for subdir invocation for target.
@@ -186,7 +186,7 @@ log_data/CMakeFiles/logit_build.dir/clean:
 log_data/CMakeFiles/logitdebug_build.dir/all:
 	$(MAKE) $(MAKESILENT) -f log_data/CMakeFiles/logitdebug_build.dir/build.make log_data/CMakeFiles/logitdebug_build.dir/depend
 	$(MAKE) $(MAKESILENT) -f log_data/CMakeFiles/logitdebug_build.dir/build.make log_data/CMakeFiles/logitdebug_build.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=5,6 "Built target logitdebug_build"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=6,7 "Built target logitdebug_build"
 .PHONY : log_data/CMakeFiles/logitdebug_build.dir/all
 
 # Build rule for subdir invocation for target.
@@ -212,12 +212,12 @@ log_data/CMakeFiles/logitdebug_build.dir/clean:
 BlynkLog/CMakeFiles/blynkLog.dir/all:
 	$(MAKE) $(MAKESILENT) -f BlynkLog/CMakeFiles/blynkLog.dir/build.make BlynkLog/CMakeFiles/blynkLog.dir/depend
 	$(MAKE) $(MAKESILENT) -f BlynkLog/CMakeFiles/blynkLog.dir/build.make BlynkLog/CMakeFiles/blynkLog.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=1,2 "Built target blynkLog"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/pi/MWPLog/CMakeFiles --progress-num=1,2,3 "Built target blynkLog"
 .PHONY : BlynkLog/CMakeFiles/blynkLog.dir/all
 
 # Build rule for subdir invocation for target.
 BlynkLog/CMakeFiles/blynkLog.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/MWPLog/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/MWPLog/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BlynkLog/CMakeFiles/blynkLog.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/pi/MWPLog/CMakeFiles 0
 .PHONY : BlynkLog/CMakeFiles/blynkLog.dir/rule

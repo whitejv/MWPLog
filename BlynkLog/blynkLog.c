@@ -1,12 +1,14 @@
-#define ADDRESS     "blynk.cloud:1883"   // Blynk MQTT Server
-#define CLIENTID    "Log Blynk"               // Unique client ID for your device
+// #define ADDRESS     "blynk.cloud:1883"   // Blynk MQTT Server
+// #define CLIENTID    "Log Blynk"               // Unique client ID for your device
 
-#define BLYNK_TEMPLATE_ID "TMPL2XybQTUE8"
-#define BLYNK_TEMPLATE_NAME "MWP Log" // Updated Template Name
-#define BLYNK_AUTH_TOKEN "RWwXuvg7SaK_-GuNRdypahmTgVHgLQoj" // Updated Auth Token
+// Blynk values now come from config file
+// #define BLYNK_TEMPLATE_ID "TMPL2XybQTUE8"
+// #define BLYNK_TEMPLATE_NAME "MWP Log"
+// #define BLYNK_AUTH_TOKEN "RWwXuvg7SaK_-GuNRdypahmTgVHgLQoj"
 
-#define BLYNK_TOPIC       "batch_ds" // Topic for Virtual Pin V1
-#define BLYNK_DEVICE_NAME "device"
+// #define BLYNK_TOPIC       "batch_ds" // Topic for Virtual Pin V1
+// Device name now comes from config file
+// #define BLYNK_DEVICE_NAME "device"
 
 #define BLYNK_PROTOTYPE_ROW_LIMIT 16 // Set to BLYNK_TABLE_ROW_COUNT to send all rows
 #define BLYNK_BATCH_ROW_LIMIT 8      // Max rows per Blynk batch message
@@ -34,11 +36,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <math.h>
 #include <time.h>
 #include <json-c/json.h>
-#include "unistd.h"
 #include "MQTTClient.h"
+#include "config.h"
 
 // Moved to file scope
 static MQTTClient client = NULL;
@@ -156,7 +159,23 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     if (strcmp(topicName, MWP_WATERTABLE_JSON_TOPIC) == 0)
     {
         printf("Received watertable JSON data. Processing...\n");
-        json_object *parsed_json = json_tokener_parse((const char *)message->payload);
+
+        // The payload from MQTT is not guaranteed to be null-terminated.
+        // Copy to a new buffer and null-terminate it before parsing.
+        char *payload_copy = malloc(message->payloadlen + 1);
+        if (payload_copy == NULL) {
+            fprintf(stderr, "Fatal: failed to allocate memory for payload copy\n");
+            MQTTClient_freeMessage(&message);
+            MQTTClient_free(topicName);
+            return 1;
+        }
+        memcpy(payload_copy, message->payload, message->payloadlen);
+        payload_copy[message->payloadlen] = '\0';
+
+        json_object *parsed_json = json_tokener_parse(payload_copy);
+        
+        // Free the copy now that it has been parsed.
+        free(payload_copy);
 
         if (parsed_json == NULL)
         {
@@ -182,49 +201,72 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
             return 1;
         }
 
-        // Iterate through the 31 mapped rows and populate blynk_display_table
+        // Get the configuration from the context
+        Config* config = (Config*)context;
+
+        // Reset the entire display table to a known zero state first.
         for (int i = 0; i < BLYNK_TABLE_ROW_COUNT; i++) {
+            memset(&blynk_display_table[i], 0, sizeof(BlynkDataRow));
+        }
+
+        int display_row_index = 0; // Use a separate index for the display table
+
+        // Iterate through the 31 mapped rows and populate blynk_display_table
+        for (int i = 0; i < BLYNK_TABLE_ROW_COUNT && display_row_index < BLYNK_PROTOTYPE_ROW_LIMIT; i++) {
             const ControllerZoneSource* source = &json_to_blynk_map[i];
-            BlynkDataRow* target_row = &blynk_display_table[i];
             
-            // Initialize data_valid to false for this row
-            target_row->data_valid = 0;
-            target_row->zone_number = source->display_zone_number; // Pre-set the zone number for display
+            // Check if this controller is in our filter list
+            int controller_num = atoi(source->controller_json_key);
+            int zone_num = atoi(source->zone_json_key);
+            int controller_allowed = 0;
+            int zone_allowed = 0;
+
+            // Check if controller is in filter list
+            for (int j = 0; j < config->data_filter.controllers_count; j++) {
+                if (config->data_filter.controllers[j] == controller_num) {
+                    controller_allowed = 1;
+                    break;
+                }
+            }
+
+            // Check if zone is in filter list
+            for (int j = 0; j < config->data_filter.zones_count; j++) {
+                if (config->data_filter.zones[j] == zone_num) {
+                    zone_allowed = 1;
+                    break;
+                }
+            }
+
+            // Skip if either controller or zone is not in filter list
+            if (!controller_allowed || !zone_allowed) {
+                continue;
+            }
+
+            // If we are here, the source is allowed. We will populate display_row_index.
+            BlynkDataRow* target_row = &blynk_display_table[display_row_index];
 
             json_object *controller_obj;
             if (!json_object_object_get_ex(details_obj, source->controller_json_key, &controller_obj) || 
                 json_object_get_type(controller_obj) != json_type_object) {
-                fprintf(stderr, "Could not find controller object for key: %s, or it's not an object. Skipping row %d.\n", 
-                        source->controller_json_key, i);
-                // Optionally set default/error values in target_row
-                target_row->total_flow = 0.0f; target_row->total_minutes = 0.0f; target_row->avg_psi = 0.0f; target_row->gpm = 0.0f;
-                continue; 
+                // This might be verbose, but useful for debugging config vs. data issues
+                if (verbose) fprintf(stdout, "Data for allowed source C:%s not present in received JSON. Skipping.\n", source->controller_json_key);
+                continue;
             }
 
             json_object *zone_obj;
             if (!json_object_object_get_ex(controller_obj, source->zone_json_key, &zone_obj) || 
                 json_object_get_type(zone_obj) != json_type_object) {
-                fprintf(stderr, "Could not find zone object for controller %s, zone key: %s. Skipping row %d.\n", 
-                        source->controller_json_key, source->zone_json_key, i);
-                target_row->total_flow = 0.0f; target_row->total_minutes = 0.0f; target_row->avg_psi = 0.0f; target_row->gpm = 0.0f;
+                if (verbose) fprintf(stdout, "Data for allowed source C:%s Z:%s not present in received JSON. Skipping.\n", 
+                        source->controller_json_key, source->zone_json_key);
                 continue;
             }
+
+            // Pre-set the zone number for display from the map
+            target_row->zone_number = source->display_zone_number;
 
             // Extract data fields from the zone_obj
             json_object *temp_obj;
             double total_flow = 0.0, total_seconds = 0.0, avg_psi = 0.0, gpm = 0.0;
-            int updated = 0; // To check updatedInLastQuery
-
-            if (json_object_object_get_ex(zone_obj, "updatedInLastQuery", &temp_obj) && json_object_get_type(temp_obj) == json_type_boolean) {
-                updated = json_object_get_boolean(temp_obj);
-            }
-            
-            // We could choose to only populate if `updated` is true, or if data is non-zero.
-            // For now, we extract whatever is there. User can decide on filtering later.
-            // if (!updated) { 
-            //     fprintf(stdout, "Data for C:%s Z:%s not updated in last query. Row %d may contain stale or zero data.\n", 
-            //             source->controller_json_key, source->zone_json_key, i);
-            // }
 
             if (json_object_object_get_ex(zone_obj, "totalFlow", &temp_obj) && json_object_get_type(temp_obj) == json_type_double) {
                 total_flow = json_object_get_double(temp_obj);
@@ -244,12 +286,14 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
             target_row->avg_psi = (float)avg_psi;
             target_row->gpm = (float)gpm;
             target_row->data_valid = 1; // Mark data as successfully populated for this row
-
+   
             if (verbose) {
-                printf("Populated Blynk Table Row %d (C:%s, Z:%s, DispZ:%d): Flow=%.2f, Mins=%.2f, PSI=%.2f, GPM=%.2f\n",
-                       i, source->controller_json_key, source->zone_json_key, target_row->zone_number,
+                printf("Populated Blynk Table Row %d (from C:%s, Z:%s, DispZ:%d): Flow=%.2f, Mins=%.2f, PSI=%.2f, GPM=%.2f\n",
+                       display_row_index, source->controller_json_key, source->zone_json_key, target_row->zone_number,
                        target_row->total_flow, target_row->total_minutes, target_row->avg_psi, target_row->gpm);
             }
+
+            display_row_index++; // IMPORTANT: only increment when a row is actually added
         }
 
         json_object_put(parsed_json); // Free the root json object
@@ -307,12 +351,12 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
                         pubmsg.retained = 0;
 
                         if (verbose) {
-                            printf("Publishing to Blynk topic '%s': %s\n", BLYNK_TOPIC, json_payload_str);
+                            printf("Publishing to Blynk topic '%s': %s\n", config->blynk.topic, json_payload_str);
                         }
-                        int rc_blynk_pub = MQTTClient_publishMessage(blynkClient, BLYNK_TOPIC, &pubmsg, &token);
+                        int rc_blynk_pub = MQTTClient_publishMessage(blynkClient, config->blynk.topic, &pubmsg, &token);
 
                         if (rc_blynk_pub != MQTTCLIENT_SUCCESS) {
-                            fprintf(stderr, "Failed to publish batch data to Blynk topic %s, rc %d\n", BLYNK_TOPIC, rc_blynk_pub);
+                            fprintf(stderr, "Failed to publish batch data to Blynk topic %s, rc %d\n", config->blynk.topic, rc_blynk_pub);
                         } else {
                             printf("Successfully published batch data to Blynk. Length: %d, Token: %d\n", pubmsg.payloadlen, token);
                         }
@@ -444,180 +488,118 @@ int blynk_msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_mess
     return 1; // Indicate success to the library
 }
 
-int loop(MQTTClient blynkClient)
-{
-   /* Original body of loop function commented out as requested
-   MQTTClient_message pubmsg = MQTTClient_message_initializer;
-   MQTTClient_deliveryToken token;
-   int rc;
-   char payload_str[55]; // For LED color strings, ensure size is adequate
-   int i;
+int send_blynk_data(MQTTClient blynkClient, Config* config) {
+    char topic[100];
+    json_object *batch_obj = json_object_new_object();
+    json_object *data_array = json_object_new_array();
+    int rc;
 
-   const char *ledcolor[] = {"Green",
-                             "Blue",
-                             "Orange",
-                             "Red",
-                             "Yellow",
-                             "Purple",
-                             "Fuscia",
-                             "Black"};
+    // Add metadata
+    json_object_object_add(batch_obj, "template_id", json_object_new_string(config->blynk.template_id));
+    json_object_object_add(batch_obj, "device_name", json_object_new_string(config->blynk.device_name));
 
-   const char *ledcolorPalette[] = {"0x00ff00",  // green
-                                    "0x0000ff",  // blue
-                                    "0xff8000",  // orange
-                                    "0xff0000",  // red
-                                    "0xffff00",  // yellow
-                                    "0xbf00ff",  // purple
-                                    "0xfe2e9a",  // fuscia
-                                    "0x000000"}; // black
+    // Add data rows
+    for (int i = 0; i < BLYNK_TABLE_ROW_COUNT; i++) {
+        BlynkDataRow* row = &blynk_display_table[i];
+        if (row->data_valid) {
+            json_object *row_obj = json_object_new_object();
+            
+            // Calculate pin number using base offset
+            int pin_number = config->pin_config.base_offset + i;
+            
+            json_object_object_add(row_obj, "pin", json_object_new_int(pin_number));
+            json_object_object_add(row_obj, "value", json_object_new_double(row->total_flow));
+            json_object_array_add(data_array, row_obj);
+        }
+    }
 
-   // --- LED Color Publishes (retaining original behavior: no critical error check leading to client destruction here) ---
-   // A more robust implementation would check return codes for these too.
-   strcpy(payload_str, ledcolorPalette[(int)monitor_.monitor.Well_1_LED_Color]);
-   pubmsg.payload = (void*)payload_str;
-   pubmsg.payloadlen = strlen(payload_str);
-   pubmsg.qos = QOS;
-   pubmsg.retained = 0;
-   MQTTClient_publishMessage(blynkClient, "ds/Well_1_LED_Bright/prop/color", &pubmsg, &token);
-   
-   strcpy(payload_str, ledcolorPalette[(int)monitor_.monitor.Well_2_LED_Color]);
-   MQTTClient_publishMessage(blynkClient, "ds/Well_2_LED_Bright/prop/color", &pubmsg, &token);
-   
-   strcpy(payload_str, ledcolorPalette[(int)monitor_.monitor.Well_3_LED_Color]);
-   MQTTClient_publishMessage(blynkClient, "ds/Well_3_LED_Bright/prop/color", &pubmsg, &token);
-   
-   strcpy(payload_str, ledcolorPalette[(int)monitor_.monitor.Irrig_4_LED_Color]);
-   MQTTClient_publishMessage(blynkClient, "ds/Irrig_4_LED_Bright/prop/color", &pubmsg, &token);
+    json_object_object_add(batch_obj, "data", data_array);
 
+    // Send the batch
+    snprintf(topic, sizeof(topic), "%s", config->blynk.topic);
+    const char *payload = json_object_to_json_string(batch_obj);
+    
+    MQTTClient_message pubmsg = MQTTClient_message_initializer;
+    pubmsg.payload = (void*)payload;
+    pubmsg.payloadlen = strlen(payload);
+    pubmsg.qos = QOS;
+    pubmsg.retained = 0;
 
-   //***  SEND INFO TO BLYNK (Main JSON Data Publish) ***
+    MQTTClient_deliveryToken token;
+    if ((rc = MQTTClient_publishMessage(blynkClient, topic, &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        fprintf(stderr, "Failed to publish Blynk data, return code %d\n", rc);
+        json_object_put(batch_obj);
+        return rc;
+    }
 
-   json_object *root = json_object_new_object();
-   if (!root) {
-      printf("CRITICAL: Failed to create json_object in loop(). Skipping this publish cycle.\n");
-      return 0; // Indicate success for this cycle to main, but operation was skipped. Client not destroyed.
-   }
+    // Wait for delivery
+    rc = MQTTClient_waitForCompletion(blynkClient, token, TIMEOUT);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        fprintf(stderr, "Failed to deliver Blynk data, return code %d\n", rc);
+        json_object_put(batch_obj);
+        return rc;
+    }
 
-   for (i=0; i<=MONITOR_LEN-13; i++) {
-      json_object_object_add(root, monitor_ClientData_var_name [i], json_object_new_double(monitor_.data_payload[i]));
-   }
-   for (i=18; i<=MONITOR_LEN-1; i++) {
-      json_object_object_add(root, monitor_ClientData_var_name [i], json_object_new_int(monitor_.data_payload[i]));
-   }
-   
-   const char *json_string = json_object_to_json_string(root);
-   pubmsg.payload = (void *)json_string;
-   pubmsg.payloadlen = strlen(json_string);
-   pubmsg.qos = QOS;
-   pubmsg.retained = 0;
-   
-   rc = MQTTClient_publishMessage(blynkClient, BLYNK_TOPIC, &pubmsg, &token);
-   if (rc != MQTTCLIENT_SUCCESS) {
-      printf("MQTT Publish (JSON) failed to topic %s, rc %d. Destroying client in loop().\n", BLYNK_TOPIC, rc);
-      json_object_put(root); 
-      MQTTClient_disconnect(blynkClient, 1000); // Disconnect client (operates on the resource via handle copy)
-      MQTTClient_destroy(&blynkClient);         // Destroy client resource (sets local blynkClient copy to NULL)
-      return -1; // Signal critical MQTT failure to main
-   }
+    json_object_put(batch_obj);
+    return MQTTCLIENT_SUCCESS;
+}
 
-   rc = MQTTClient_waitForCompletion(blynkClient, token, TIMEOUT);
-   json_object_put(root); // Free JSON object after MQTT lib is done with payload (publish and wait)
-   // root = NULL; // Good practice if root were to be used further, to prevent double free.
+int loop(MQTTClient blynkClient, Config* config) {
+    // Send data to Blynk
+    if (blynkClient_initialized_and_connected) {
+        if (send_blynk_data(blynkClient, config) != MQTTCLIENT_SUCCESS) {
+            fprintf(stderr, "Failed to send data to Blynk\n");
+            blynkClient_initialized_and_connected = 0;
+        }
+    }
 
-   if (rc != MQTTCLIENT_SUCCESS) {
-      printf("MQTT WaitForCompletion (JSON) failed for token %d, topic %s, rc %d. Destroying client in loop().\n", token, BLYNK_TOPIC, rc);
-      MQTTClient_disconnect(blynkClient, 1000); 
-      MQTTClient_destroy(&blynkClient);        
-      return -1; // Signal critical MQTT failure to main
-   }
-   */
-   return 0; // Success for this loop iteration
+    return 0; // Success for this loop iteration
 }
 
 // New function to initialize and connect the Blynk MQTT client
-int initialize_blynk_client(MQTTClient* blynk_client_handle_ptr) {
-    MQTTClient_connectOptions blynk_conn_opts = MQTTClient_connectOptions_initializer;
+int initialize_blynk_client(MQTTClient* blynk_client_handle_ptr, Config* config) {
+    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
     int rc;
+    char blynk_address[256];
 
-    // ADDRESS, CLIENTID, BLYNK_DEVICE_NAME, BLYNK_AUTH_TOKEN are #defines from the top of the file
-    char blynk_actual_address[256]; // For "blynk.cloud:1883"
-    // The ADDRESS define is "blynk.cloud:1883", which is not a full URI.
-    // MQTTClient_create expects "tcp://hostname:port" or "ssl://hostname:port" etc.
-    // Let's ensure it's correctly formatted. Assuming non-TLS for now based on port 1883.
-    // It seems the original code for `client` uses `snprintf(mqtt_address, sizeof(mqtt_address), "tcp://%s:%d", mqtt_ip, mqtt_port);`
-    // The ADDRESS for blynk doesn't include the scheme. Let's assume Paho handles it or it's an oversight.
-    // For consistency and robustness, it should be "tcp://blynk.cloud:1883".
-    // However, the original code `MQTTClient_create(blynk_client_handle_ptr, ADDRESS, ...)` seems to work,
-    // so Paho might prepend "tcp://" if scheme is missing and no explicit transport options are set.
-    // Will proceed with current ADDRESS define.
+    // Format the Blynk MQTT address with the correct scheme
+    snprintf(blynk_address, sizeof(blynk_address), "tcp://%s", config->blynk.address);
 
-    // Ensure the client handle pointer is not NULL before dereferencing
-    if (!blynk_client_handle_ptr) {
-        fprintf(stderr, "Initialize: blynk_client_handle_ptr is NULL.\n");
-        return -1; // Or some other error code indicating invalid argument
-    }
-
-    // If *blynk_client_handle_ptr is not NULL, it might mean we are trying to re-initialize
-    // an existing client. Paho MQTT library might require destroying the old one first if create is called again.
-    // For simplicity, let's assume if *blynk_client_handle_ptr is non-NULL, it's already created and we might be reconnecting.
-    // However, the current logic in main creates it as NULL and calls this. If connection fails, main does not NULL it before retrying.
-    // Safest is to destroy if non-NULL before creating again, or ensure create is only called on a NULL handle.
-    // For now, this function's main purpose is initial creation and connection.
-    // The main loop handles the blynkClient being NULL or not.
-
-    // Create a unique client ID for blynk client, e.g., by appending "_blynk"
-    char blynk_client_id[100];
-    snprintf(blynk_client_id, sizeof(blynk_client_id), "%s_blynk", CLIENTID);
-
-    if ((rc = MQTTClient_create(blynk_client_handle_ptr, ADDRESS, blynk_client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL)) != MQTTCLIENT_SUCCESS) {
-        printf("Initialize: Failed to create Blynk MQTT client, rc %d\n", rc);
-        // *blynk_client_handle_ptr will be unmodified or set by Paho on failure, usually to NULL or invalid.
+    // Create the client
+    rc = MQTTClient_create(blynk_client_handle_ptr, blynk_address, config->blynk.client_id,
+        MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        fprintf(stderr, "Failed to create Blynk client, return code %d\n", rc);
         return rc;
     }
 
-    // Set callbacks for blynkClient before connecting
-    // Pass the client handle itself as context, useful if the callback needs to operate on it
-    // or if multiple clients were using the same callback (not the case here but good practice).
-    if ((rc = MQTTClient_setCallbacks(*blynk_client_handle_ptr, (void*)*blynk_client_handle_ptr, blynk_connlost, blynk_msgarrvd, delivered)) != MQTTCLIENT_SUCCESS) {
-        printf("Initialize: Failed to set callbacks for Blynk client, rc %d\n", rc);
-        MQTTClient_destroy(blynk_client_handle_ptr); // Clean up the created client
+    // Set up the connection options
+    conn_opts.keepAliveInterval = 20;
+    conn_opts.cleansession = 1;
+    conn_opts.username = config->blynk.device_name;
+    conn_opts.password = config->blynk.auth_token;  // Use auth token instead of template ID
+
+    // Set callbacks
+    MQTTClient_setCallbacks(*blynk_client_handle_ptr, config, blynk_connlost, blynk_msgarrvd, delivered);
+
+    // Connect to the server
+    if ((rc = MQTTClient_connect(*blynk_client_handle_ptr, &conn_opts)) != MQTTCLIENT_SUCCESS) {
+        fprintf(stderr, "Failed to connect to Blynk server, return code %d\n", rc);
+        MQTTClient_destroy(blynk_client_handle_ptr);
         return rc;
     }
 
-    // Set Blynk MQTT connection options
-    blynk_conn_opts.username = BLYNK_DEVICE_NAME; 
-    blynk_conn_opts.password = BLYNK_AUTH_TOKEN; // Use Auth Token as password
-    blynk_conn_opts.keepAliveInterval = 45; // As per original blynkClient settings
-    blynk_conn_opts.cleansession = 1;
-    // Consider: blynk_conn_opts.automaticReconnect = 1; // If Paho lib supports & desired over manual loop
-
-    printf("Initialize: Connecting to Blynk MQTT server at %s...\n", ADDRESS);
-    if ((rc = MQTTClient_connect(*blynk_client_handle_ptr, &blynk_conn_opts)) != MQTTCLIENT_SUCCESS) {
-        printf("Initialize: Failed to connect to Blynk MQTT server, rc %d\n", rc);
-        MQTTClient_destroy(blynk_client_handle_ptr); // Clean up client if connection failed
+    // Subscribe to the time window topic
+    char topic[100];
+    snprintf(topic, sizeof(topic), BLYNK_TIMEWINDOW_DOWNLINK_DS_TOPIC);
+    if ((rc = MQTTClient_subscribe(*blynk_client_handle_ptr, topic, QOS)) != MQTTCLIENT_SUCCESS) {
+        fprintf(stderr, "Failed to subscribe to Blynk time window topic, return code %d\n", rc);
+        MQTTClient_disconnect(*blynk_client_handle_ptr, 10000);
+        MQTTClient_destroy(blynk_client_handle_ptr);
         return rc;
     }
 
-    printf("Initialize: Successfully connected to Blynk MQTT server: %s\n", ADDRESS);
-
-    // Subscribe to the Blynk V0 downlink topic
-    char blynk_v0_topic[256];
-    // snprintf(blynk_v0_topic, sizeof(blynk_v0_topic), BLYNK_DOWNLINK_V0_TOPIC_FORMAT, BLYNK_AUTH_TOKEN); // Old way
-    // snprintf(blynk_v0_topic, sizeof(blynk_v0_topic), "%s", BLYNK_V0_DOWNLINK_DS_TOPIC); // Previous way
-    snprintf(blynk_v0_topic, sizeof(blynk_v0_topic), "%s", BLYNK_TIMEWINDOW_DOWNLINK_DS_TOPIC); // Current correct way
-    
-    printf("Initialize: Subscribing Blynk client to %s with QoS %d\n", blynk_v0_topic, QOS);
-    if ((rc = MQTTClient_subscribe(*blynk_client_handle_ptr, blynk_v0_topic, QOS)) != MQTTCLIENT_SUCCESS) {
-        printf("Initialize: Failed to subscribe Blynk client to %s, rc %d\n", blynk_v0_topic, rc);
-        //log_message("BlynkW: Error == Failed to subscribe to %s. RC: %d\n", blynk_v0_topic, rc);
-        MQTTClient_disconnect(*blynk_client_handle_ptr, 1000); // Disconnect first
-        MQTTClient_destroy(blynk_client_handle_ptr);         // Then destroy
-        return rc;
-    } else {
-        printf("Initialize: Successfully subscribed Blynk client to %s\n", blynk_v0_topic);
-        //log_message("BlynkW: Subscribed to %s successfully.", blynk_v0_topic);
-    }
-
+    blynkClient_initialized_and_connected = 1;
     return MQTTCLIENT_SUCCESS;
 }
 
@@ -626,15 +608,16 @@ int main(int argc, char *argv[])
    // Set the global double-to-string format for all json-c operations in this program.
    // "%.4g" formats numbers to 4 significant digits.
    json_c_set_serialization_double_format("%.4g", 0);
-
-   // MQTTClient client; // Moved to file scope
+   
    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
    int rc;
    int opt;
    const char *mqtt_ip = NULL;
    int mqtt_port = 0;
+   const char *config_file = "blynk_config.json";  // Default config file path in project directory
+   Config config;
 
-   while ((opt = getopt(argc, argv, "vPD")) != -1) {
+   while ((opt = getopt(argc, argv, "vPDc:")) != -1) {
       switch (opt) {
          case 'v':
                verbose = TRUE;
@@ -647,8 +630,11 @@ int main(int argc, char *argv[])
                mqtt_ip = DEV_MQTT_IP;
                mqtt_port = DEV_MQTT_PORT;
                break;
+         case 'c':
+               config_file = optarg;
+               break;
          default:
-               fprintf(stderr, "Usage: %s [-v] [-P | -D]\n", argv[0]);
+               fprintf(stderr, "Usage: %s [-v] [-P | -D] [-c config_file]\n", argv[0]);
                return 1;
       }
    }
@@ -657,8 +643,35 @@ int main(int argc, char *argv[])
       printf("Verbose mode enabled\n");
    }
 
+   // Load configuration
+   if (load_config(config_file, &config) != 0) {
+      fprintf(stderr, "Failed to load configuration from %s\n", config_file);
+      return 1;
+   }
+
+   if (verbose) {
+      printf("Loaded configuration:\n");
+      printf("  Blynk Address: %s\n", config.blynk.address);
+      printf("  Blynk Client ID: %s\n", config.blynk.client_id);
+      printf("  Blynk Device Name: %s\n", config.blynk.device_name);
+      printf("  Blynk Template Name: %s\n", config.blynk.template_name);
+      printf("  Blynk Template ID: %s\n", config.blynk.template_id);
+      printf("  Blynk Auth Token: %s\n", config.blynk.auth_token);
+      printf("  Blynk Topic: %s\n", config.blynk.topic);
+      printf("  Controllers: ");
+      for (int i = 0; i < config.data_filter.controllers_count; i++) {
+         printf("%d ", config.data_filter.controllers[i]);
+      }
+      printf("\n  Zones: ");
+      for (int i = 0; i < config.data_filter.zones_count; i++) {
+         printf("%d ", config.data_filter.zones[i]);
+      }
+      printf("\n  Pin Base Offset: %d\n", config.pin_config.base_offset);
+   }
+
    if (mqtt_ip == NULL) {
       fprintf(stderr, "Please specify either Production (-P) or Development (-D) server\n");
+      free_config(&config);
       return 1;
    }
 
@@ -669,7 +682,7 @@ int main(int argc, char *argv[])
    
    //log_message("Blynk: Started\n");
 
-   if ((rc = MQTTClient_create(&client, mqtt_address, CLIENTID,
+   if ((rc = MQTTClient_create(&client, mqtt_address, config.blynk.client_id,
                                MQTTCLIENT_PERSISTENCE_NONE, NULL)) != MQTTCLIENT_SUCCESS)
    {
       printf("Failed to create client, return code %d\n", rc);
@@ -678,7 +691,7 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
    }
    
-   if ((rc = MQTTClient_setCallbacks(client, NULL, connlost, msgarrvd, delivered)) != MQTTCLIENT_SUCCESS)
+   if ((rc = MQTTClient_setCallbacks(client, &config, connlost, msgarrvd, delivered)) != MQTTCLIENT_SUCCESS)
    {
       printf("Failed to set callbacks, return code %d\n", rc);
       //log_message("Blynk: Error == Failed to Set Callbacks. Return Code: %d\n", rc);
@@ -717,7 +730,7 @@ int main(int argc, char *argv[])
 
    // Initial attempt to connect the Blynk client
    printf("Main: Attempting initial Blynk client connection...\n");
-   if (initialize_blynk_client(&blynkClient) == MQTTCLIENT_SUCCESS) {
+   if (initialize_blynk_client(&blynkClient, &config) == MQTTCLIENT_SUCCESS) {
       blynkClient_initialized_and_connected = 1;
       // log_message("BlynkW: Initial Blynk client connection successful."); // Optional logging
    } else {
@@ -739,7 +752,7 @@ int main(int argc, char *argv[])
          printf("Main: Blynk client not connected. Attempting to reconnect in %d seconds...\n", RECONNECT_DELAY_SECONDS);
          // log_message("BlynkW: Attempting to reconnect Blynk client."); // Optional
          sleep(RECONNECT_DELAY_SECONDS); 
-         if (initialize_blynk_client(&blynkClient) == MQTTCLIENT_SUCCESS) {
+         if (initialize_blynk_client(&blynkClient, &config) == MQTTCLIENT_SUCCESS) {
             blynkClient_initialized_and_connected = 1;
             printf("Main: Blynk client reconnected successfully.\n");
             // log_message("BlynkW: Reconnected Blynk client successfully."); // Optional
@@ -756,7 +769,7 @@ int main(int argc, char *argv[])
              printf("CRITICAL ERROR in Main: blynkClient_initialized_and_connected is true, but blynkClient handle is NULL! Correcting state.\n");
              blynkClient_initialized_and_connected = 0; 
          } else {
-            rc_loop_status = loop(blynkClient); // Call the modified loop function
+            rc_loop_status = loop(blynkClient, &config); // Call the modified loop function
             if (rc_loop_status == -1) {
                printf("Main: loop() reported critical MQTT error for Blynk. Client resource was destroyed by loop.\n");
                // log_message("BlynkW: Critical error in Blynk client loop. Client destroyed by loop."); //Optional
@@ -801,6 +814,8 @@ int main(int argc, char *argv[])
       MQTTClient_destroy(&blynkClient);
    }
 
+   // Clean up configuration before exit
+   free_config(&config);
    printf("Main: Application exiting.\n");
    //log_message("Blynk: Exited Main Loop\n"); // Duplicate? Or different context?
    return EXIT_SUCCESS;

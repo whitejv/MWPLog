@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/pi/MWPLog/BlynkLog/blynkLog.c" "BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o" "gcc" "BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o.d"
+  "/home/pi/MWPLog/BlynkLog/config.c" "BlynkLog/CMakeFiles/blynkLog.dir/config.c.o" "gcc" "BlynkLog/CMakeFiles/blynkLog.dir/config.c.o.d"
   )
 
 # Targets to which this target links.

@@ -199,6 +199,30 @@ blynkLog.c.s:
 	cd /home/pi/MWPLog && $(MAKE) $(MAKESILENT) -f BlynkLog/CMakeFiles/blynkLog.dir/build.make BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.s
 .PHONY : blynkLog.c.s
 
+config.o: config.c.o
+.PHONY : config.o
+
+# target to build an object file
+config.c.o:
+	cd /home/pi/MWPLog && $(MAKE) $(MAKESILENT) -f BlynkLog/CMakeFiles/blynkLog.dir/build.make BlynkLog/CMakeFiles/blynkLog.dir/config.c.o
+.PHONY : config.c.o
+
+config.i: config.c.i
+.PHONY : config.i
+
+# target to preprocess a source file
+config.c.i:
+	cd /home/pi/MWPLog && $(MAKE) $(MAKESILENT) -f BlynkLog/CMakeFiles/blynkLog.dir/build.make BlynkLog/CMakeFiles/blynkLog.dir/config.c.i
+.PHONY : config.c.i
+
+config.s: config.c.s
+.PHONY : config.s
+
+# target to generate assembly for a file
+config.c.s:
+	cd /home/pi/MWPLog && $(MAKE) $(MAKESILENT) -f BlynkLog/CMakeFiles/blynkLog.dir/build.make BlynkLog/CMakeFiles/blynkLog.dir/config.c.s
+.PHONY : config.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -215,6 +239,9 @@ help:
 	@echo "... blynkLog.o"
 	@echo "... blynkLog.i"
 	@echo "... blynkLog.s"
+	@echo "... config.o"
+	@echo "... config.i"
+	@echo "... config.s"
 .PHONY : help
 
 

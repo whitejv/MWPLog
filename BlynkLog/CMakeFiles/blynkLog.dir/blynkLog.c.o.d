@@ -59,7 +59,8 @@ BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o: \
  /usr/include/aarch64-linux-gnu/bits/confname.h \
  /usr/include/aarch64-linux-gnu/bits/getopt_posix.h \
  /usr/include/aarch64-linux-gnu/bits/getopt_core.h \
- /usr/include/aarch64-linux-gnu/bits/unistd_ext.h /usr/include/math.h \
+ /usr/include/aarch64-linux-gnu/bits/unistd_ext.h /usr/include/getopt.h \
+ /usr/include/aarch64-linux-gnu/bits/getopt_ext.h /usr/include/math.h \
  /usr/include/aarch64-linux-gnu/bits/math-vector.h \
  /usr/include/aarch64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/aarch64-linux-gnu/bits/flt-eval-method.h \
@@ -85,4 +86,5 @@ BlynkLog/CMakeFiles/blynkLog.dir/blynkLog.c.o: \
  /usr/local/include/MQTTExportDeclarations.h \
  /usr/local/include/MQTTProperties.h /usr/local/include/MQTTReasonCodes.h \
  /usr/local/include/MQTTSubscribeOpts.h \
- /usr/local/include/MQTTClientPersistence.h
+ /usr/local/include/MQTTClientPersistence.h \
+ /home/pi/MWPLog/BlynkLog/config.h

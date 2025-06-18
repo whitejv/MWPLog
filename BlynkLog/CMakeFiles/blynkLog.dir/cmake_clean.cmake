@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/blynkLog.dir/blynkLog.c.o"
   "CMakeFiles/blynkLog.dir/blynkLog.c.o.d"
+  "CMakeFiles/blynkLog.dir/config.c.o"
+  "CMakeFiles/blynkLog.dir/config.c.o.d"
   "blynkLog"
   "blynkLog.pdb"
 )
