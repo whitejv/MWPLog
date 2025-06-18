@@ -1,3 +1,5 @@
+Time Window: 24h
+
 Super Summary - Total Irrigation Gallons (C0, C1, C2): 0.00
 Super Summary - Total Well 3 Gallons (C3Z1): 0.00
 
